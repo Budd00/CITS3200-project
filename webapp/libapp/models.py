@@ -297,6 +297,32 @@ def clear_false_links(tag):
                 #add the linked tag to the list of tags that have been linked
                 linked.append(reached)
     return
+
+#remove implied links from the given asset due to the given tag
+def detach_tag(asset):
+    #empty ignore list
+    ignore = []
+    #find all edges to the asset that are implied
+    impl_edges = AssetEdge.objects.filter(asset_id__exact = asset.id).filter(implied__exact = 1)
+    #delete all implied edges
+    for edge in impl_edges:
+        edge.delete()
+    #find all tags directly linked to the asset
+    direct_tags = find_asset_tags_direct(asset, ignore)
+    #create list to store linked tags
+    linked = []
+    #add direct tags to the list of linked tags
+    linked = linked+direct_tags
+    #for each direct tag, find all the tags it implies and link them to the asset
+    for tag in direct_tags:
+        #find all the tags that this tag implies, ignoring tags that have already been linked
+        reachable = reachable_child(tag, linked)
+        #for each reachable tag, create a link to the asset
+        for reached in reachable:
+            link_asset(asset, reached, 1)
+            #add the linked tag to the list of tags that have been linked
+            linked.append(reached)
+    return
     
 #removes an edge between a given parent and child tag
 def remove_edge(parent, child):
@@ -310,6 +336,17 @@ def remove_edge(parent, child):
         clear_false_links(parent)
     return
 
+#removes an edge between a given asset and tag
+def remove_asset_edge(asset, tag):
+    #find the edge with the given asset and tag
+    to_remove = AssetEdge.objects.filter(asset_id__exact = asset.id).filter(tag_id__exact = tag.id)[0]
+    #check that the edge exists
+    if to_remove != None:
+        #remove the edge
+        to_remove.delete()
+        #remove any asset links implied because of this edge
+        detach_tag(asset)
+    return
         
 
 

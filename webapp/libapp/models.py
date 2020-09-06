@@ -60,6 +60,17 @@ class AssetEdge(models.Model):
     def __repr__(self):
         return self.id
 
+#Create AlternateName table for tags which are known by multiple terms
+class AlternateName(models.Model):
+
+    #primary key
+    id          = models.UUIDField(default=uuid.uuid4, primary_key = True)
+    #Tag ID
+    tag_id      = models.ForeignKey(Tag)
+    #Alternate name of tag
+    name        = models.CharField(max_length = 64)
+
+
 
 #return a tag object with the given name
 def tag_by_name(name):

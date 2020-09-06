@@ -7,9 +7,13 @@ import uuid
 class Asset(models.Model):
     
     #primary key
-    id = models.UUIDField(primary_key = True)
+    id = models.UUIDField(default=uuid.uuid4, primary_key = True)
     #name
     name = models.CharField(max_length = 64)
+
+    #return this asset name
+    def __repr__(self):
+        return self.name
 
 #Create tag table
 class Tag(models.Model):
@@ -37,13 +41,13 @@ class Edge(models.Model):
     #primary key
     id          = models.UUIDField(default=uuid.uuid4, primary_key = True)
     #tag id of the parent tag
-    parent_tag  = models.ForeignKey(Tag)
+    parent_tag  = models.ForeignKey(Tag,related_name='%(class)s_parent', on_delete=models.CASCADE,default=uuid.uuid4)
     #tag id of the child tag
-    child_tag   = models.ForeignKey(Tag)
+    child_tag   = models.ForeignKey(Tag,related_name='%(class)s_child', on_delete=models.CASCADE,default=uuid.uuid4)
 
     #return this edge id
     def __repr__(self):
-        return self.id
+        return str(self.id)
 
 #Create Asset to tag edges table to track asset tags
 class AssetEdge(models.Model):
@@ -52,13 +56,14 @@ class AssetEdge(models.Model):
     #primary key
     id          = models.UUIDField(default=uuid.uuid4, primary_key = True)
     #id of the asset
-    asset_id    = models.ForeignKey(Asset)
+    asset_id    = models.ForeignKey(Asset, on_delete=models.CASCADE)
     #id of linked tag
-    tag_id      = models.ForeignKey(Tag)
+    tag_id      = models.ForeignKey(Tag, on_delete=models.CASCADE)
     
     #return this edge id
+    #__repr__ returns TypeError when trying to return type UUID. Str() is used to combat this
     def __repr__(self):
-        return self.id
+        return str(self.id)
 
 #Create AlternateName table for tags which are known by multiple terms
 class AlternateName(models.Model):
@@ -66,7 +71,7 @@ class AlternateName(models.Model):
     #primary key
     id          = models.UUIDField(default=uuid.uuid4, primary_key = True)
     #Tag ID
-    tag_id      = models.ForeignKey(Tag)
+    tag_id      = models.ForeignKey(Tag, on_delete=models.CASCADE)
     #Alternate name of tag
     name        = models.CharField(max_length = 64)
 
@@ -89,9 +94,7 @@ def link_tags(parent, child):
     #Check given tags are in database (only use if input is text(name) based)
     #parTag = tag_by_name(parent)
     #chilTag = tag_by_name(child)
-    parTag = parent
-    chilTag = child
-    newEdge = Edge(parent_tag = parTag.id, child_tag = chilTag.id)
+    newEdge = Edge(parent_tag = parent, child_tag = child)
     newEdge.save()
     return
 
@@ -102,19 +105,20 @@ def link_asset(asset, tag):
     #thisTag = tag_by_name(tag)
     thisAsset = asset
     thisTag = tag
-    newEdge = AssetEdge(asset_id = thisAsset.id, tag_id = thisTag.id)
+    newEdge = AssetEdge(asset_id = thisAsset, tag_id = thisTag)
     newEdge.save()
     return
 
 #returns a list of assets with direct links to this tag, ignoring any assets in the found list
-def find_assets_direct(tag, found):
+def find_assets_direct(tag, found=[]):
     #empty list to store found assets
     assets= []
     #find all edges linking an asset to the given tag
     asset_query = AssetEdge.objects.filter(tag_id__exact=tag.id)
     #for each edge found, retrieve the asset
     for link in asset_query:
-        this_asset = Asset.objects.filter(id__exact = link.asset_id)[0]
+
+        this_asset = Asset.objects.filter(id__exact = link.asset_id.id)[0]
         #if the found asset is nt in the "found" list, add it to the assets list
         if this_asset not in found:
             assets.append(this_asset)
@@ -122,29 +126,29 @@ def find_assets_direct(tag, found):
     return assets
 
 #returns a list of tags with direct links to this asset, ignoring any tags in the ignore list
-def find_assets_direct(asset, ignore):
+def find_tags_direct(asset, ignore=[]):
     #empty list to store found tags
     tags= []
     #find all edges linking a tag to the given asset
     tag_query = AssetEdge.objects.filter(asset_id__exact=asset.id)
     #for each edge found, retrieve the tag
     for link in tag_query:
-        this_tag = Tag.objects.filter(id__exact = link.tag_id)[0]
+        this_tag = Tag.objects.filter(id__exact = link.tag_id.id)[0]
         #if the found tag is not in the ignore list, add it to the tags list
         if this_tag not in ignore:
-            assets.append(this_tag)
+            tags.append(this_tag)
     #return the tags list
-    return assets
+    return tags
 
 #returns a list of tags that imply the given tag, ignoring any tags in the ignore list
-def find_parent_tags(tag, ignore):
+def find_parent_tags(tag, ignore=[]):
     #empty tags list to store found parent tags
     tags = []
     #find all edges with the given tag as the child tag
     tag_query = Edge.objects.filter(child_tag__exact = tag.id)
     #for each edge found, retreive the parent tag
     for link in tag_query:
-        this_tag = Tag.objects.filter(id__exact = link.parent_tag)[0]
+        this_tag = Tag.objects.filter(id__exact = link.parent_tag.id)[0]
         #if the parent tag is not in the ignore list, add it to the tags list
         if this_tag.id not in ignore:
             tags.append(this_tag)
@@ -152,14 +156,14 @@ def find_parent_tags(tag, ignore):
     return tags
 
     #returns a list of tags that the given tag implies, ignoring any tags in the ignore list
-def find_parent_tags(tag, ignore):
+def find_child_tags(tag, ignore=[]):
     #empty tags list to store found child tags
     tags = []
     #find all edges with the given tag as the parent tag
     tag_query = Edge.objects.filter(parent_tag__exact = tag.id)
     #for each edge found, retreive the child tag
     for link in tag_query:
-        this_tag = Tag.objects.filter(id__exact = link.child_tag)[0]
+        this_tag = Tag.objects.filter(id__exact = link.child_tag.id)[0]
         #if the child tag is not in the ignore list, add it to the tags list
         if this_tag.id not in ignore:
             tags.append(this_tag)

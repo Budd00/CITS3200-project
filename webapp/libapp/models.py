@@ -75,6 +75,9 @@ class AlternateName(models.Model):
     #Alternate name of tag
     name        = models.CharField(max_length = 64)
 
+    #return the alternate name
+    def __repr__(self):
+        return self.name
 
 
 #return a tag object with the given name
@@ -108,6 +111,21 @@ def link_asset(asset, tag):
     newEdge = AssetEdge(asset_id = thisAsset, tag_id = thisTag)
     newEdge.save()
     return
+
+#checks if tag is valid
+def check_tag(tag_name):
+    tag_query = Tag.objects.filter(name__exact=tag_name)
+    if tag_query.exists():
+        return tag_query[0]
+    else:
+        return None
+
+def check_asset(asset_name):
+    asset_query = Asset.objects.filter(name__exact=asset_name)
+    if asset_query.exists():
+        return asset_query[0]
+    else:
+        return None
 
 #returns a list of assets with direct links to this tag, ignoring any assets in the found list
 def find_assets_direct(tag, found=[]):
@@ -197,3 +215,19 @@ def find_all_assets(tag):
         assets = assets + these_assets
     #return the list of found assets
     return assets
+
+#returns a list of alternate names for that tag
+def find_alternate_name(tag):
+    alternate_names = []
+    alternate_name_query = AlternateName.objects.filter(tag_id__exact = tag.id)
+    for name in alternate_name_query:
+        alternate_names.append(name)
+    return alternate_names
+
+#checks if this tag name is an alternate name. If so, returns tag
+def check_tag_alternates(name):
+    alternate_name_query = AlternateName.objects.filter(name__exact = name)
+    if alternate_name_query.exists():
+        return alternate_name_query[0].tag_id
+    else:
+        return None

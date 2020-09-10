@@ -11,9 +11,9 @@ class Asset(models.Model):
     #name
     name = models.CharField(max_length = 64)
     #Any notes for the public to read. ie. description
-    pub_notes = models.TextField()
+    pub_notes = models.TextField(blank=True)
     #Any notes not for the public to read. ie. missing peices, maintenance issues
-    priv_notes = mdels.TextField()
+    priv_notes = models.TextField(blank=True)
 
     #return this asset name
     def __repr__(self):
@@ -88,21 +88,6 @@ class AlternateName(models.Model):
     def __repr__(self):
         return self.name
 
-
-
-
-#return a tag object with the given name
-def tag_by_name(name):
-    #query the database for a tag with the given name
-    result = Tag.objects.filter(name__exact= name)
-    return result
-
-#return a tag object with the given id
-def tag_by_id(id):
-    #query the database for a tag with the given id
-    result = Tag.objects.filter(id__exact= id)
-    return result
-
 #Given two tags, create an edge link from parent to child
 def link_tags(parent, child):
     #Check given tags are in database (only use if input is text(name) based)
@@ -128,7 +113,7 @@ def link_asset(asset, tag, implied):
     for edge in existingEdges:
         if edge.tag_id == tag.id:
             exists = True
-    if !exists:
+    if not exists:
         newEdge = AssetEdge(asset_id = thisAsset.id, tag_id = thisTag.id, implied=implied)
         newEdge.save()
 

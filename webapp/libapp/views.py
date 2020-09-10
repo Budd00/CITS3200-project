@@ -12,7 +12,6 @@ def search_result(request):
     result_list = []
     context = {
         'result_list':result_list
-        'tag':tag
     }
     query = request.GET.get('q')
     option = request.GET.get('option')

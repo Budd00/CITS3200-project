@@ -112,16 +112,19 @@ def link_asset(asset, tag):
     newEdge.save()
     return
 
-#checks if tag is valid
+#checks if the given tag exists
 def check_tag(tag_name):
     tag_query = Tag.objects.filter(name__exact=tag_name)
+    #returns the tag if exists
     if tag_query.exists():
         return tag_query[0]
     else:
         return None
 
+#checks if the given asset exists
 def check_asset(asset_name):
     asset_query = Asset.objects.filter(name__exact=asset_name)
+    #returns the asset if exists
     if asset_query.exists():
         return asset_query[0]
     else:
@@ -224,7 +227,7 @@ def find_alternate_name(tag):
         alternate_names.append(name)
     return alternate_names
 
-#checks if this tag name is an alternate name. If so, returns tag
+#checks if the given name is an alternate name. If so, returns the tag id
 def check_tag_alternates(name):
     alternate_name_query = AlternateName.objects.filter(name__exact = name)
     if alternate_name_query.exists():

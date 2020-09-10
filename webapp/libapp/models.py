@@ -7,13 +7,17 @@ import uuid
 class Asset(models.Model):
     
     #primary key
-    id = models.UUIDField(primary_key = True)
+    id = models.UUIDField(default=uuid.uuid4, primary_key = True)
     #name
     name = models.CharField(max_length = 64)
     #Any notes for the public to read. ie. description
     pub_notes = models.TextField()
     #Any notes not for the public to read. ie. missing peices, maintenance issues
     priv_notes = mdels.TextField()
+
+    #return this asset name
+    def __repr__(self):
+        return self.name
 
 #Create tag table
 class Tag(models.Model):
@@ -41,13 +45,13 @@ class Edge(models.Model):
     #primary key
     id          = models.UUIDField(default=uuid.uuid4, primary_key = True)
     #tag id of the parent tag
-    parent_tag  = models.ForeignKey(Tag)
+    parent_tag  = models.ForeignKey(Tag,related_name='%(class)s_parent', on_delete=models.CASCADE,default=uuid.uuid4)
     #tag id of the child tag
-    child_tag   = models.ForeignKey(Tag)
+    child_tag   = models.ForeignKey(Tag,related_name='%(class)s_child', on_delete=models.CASCADE,default=uuid.uuid4)
 
     #return this edge id
     def __repr__(self):
-        return self.id
+        return str(self.id)
 
 #Create Asset to tag edges table to track asset tags
 class AssetEdge(models.Model):
@@ -56,16 +60,33 @@ class AssetEdge(models.Model):
     #primary key
     id          = models.UUIDField(default=uuid.uuid4, primary_key = True)
     #id of the asset
-    asset_id    = models.ForeignKey(Asset)
+    asset_id    = models.ForeignKey(Asset, on_delete=models.CASCADE)
     #id of linked tag
-    tag_id      = models.ForeignKey(Tag)
+
+    tag_id      = models.ForeignKey(Tag, on_delete=models.CASCADE)
     #determines whether the link is an implied or direct edge
     #0 - direct link, 1- implied link
     implied     = models.IntegerField(default=0)
+
     
     #return this edge id
+    #__repr__ returns TypeError when trying to return type UUID. Str() is used to combat this
     def __repr__(self):
-        return self.id
+        return str(self.id)
+
+#Create AlternateName table for tags which are known by multiple terms
+class AlternateName(models.Model):
+
+    #primary key
+    id          = models.UUIDField(default=uuid.uuid4, primary_key = True)
+    #Tag ID
+    tag_id      = models.ForeignKey(Tag, on_delete=models.CASCADE)
+    #Alternate name of tag
+    name        = models.CharField(max_length = 64)
+
+    #return the alternate name
+    def __repr__(self):
+        return self.name
 
 
 
@@ -84,9 +105,11 @@ def tag_by_id(id):
 
 #Given two tags, create an edge link from parent to child
 def link_tags(parent, child):
-    parTag = parent
-    chilTag = child
-    newEdge = Edge(parent_tag = parTag.id, child_tag = chilTag.id)
+    #Check given tags are in database (only use if input is text(name) based)
+    #parTag = tag_by_name(parent)
+    #chilTag = tag_by_name(child)
+    newEdge = Edge(parent_tag = parent, child_tag = child)
+
     newEdge.save()
     link_assets_new(newEdge)
     return
@@ -95,6 +118,7 @@ def link_tags(parent, child):
 def link_asset(asset, tag, implied):
     thisAsset = asset
     thisTag = tag
+
     #check that there isn't already a link
     #find all edges to the asset
     existingEdges = AssetEdge.objects.filter(asset_id__exact = asset.id)
@@ -107,17 +131,40 @@ def link_asset(asset, tag, implied):
     if !exists:
         newEdge = AssetEdge(asset_id = thisAsset.id, tag_id = thisTag.id, implied=implied)
         newEdge.save()
+
     return
 
+#checks if the given tag exists
+def check_tag(tag_name):
+    tag_query = Tag.objects.filter(name__exact=tag_name)
+    #returns the tag if exists
+    if tag_query.exists():
+        return tag_query[0]
+    else:
+        return None
+
+#checks if the given asset exists
+def check_asset(asset_name):
+    asset_query = Asset.objects.filter(name__exact=asset_name)
+    #returns the asset if exists
+    if asset_query.exists():
+        return asset_query[0]
+    else:
+        return None
+
 #returns a list of assets with direct links to this tag, ignoring any assets in the found list
-def find_assets_direct(tag, found):
+def find_assets_direct(tag, found=[]):
     #empty list to store found assets
     assets= []
     #find all edges linking an asset to the given tag
     asset_query = AssetEdge.objects.filter(tag_id__exact=tag.id)
     #for each edge found, retrieve the asset
     for link in asset_query:
-        this_asset = Asset.objects.filter(id__exact = link.asset_id)[0]
+
+
+        this_asset = Asset.objects.filter(id__exact = link.asset_id.id)[0]
+
+
         #if the found asset is not in the "found" list, and is a dirent link, add it to the assets list
         if this_asset not in found and (link.implied == 0):
             assets.append(this_asset)
@@ -133,6 +180,7 @@ def find_assets(tag, found):
     #for each edge found, retrieve the asset
     for link in asset_query:
         this_asset = Asset.objects.filter(id__exact = link.asset_id)[0]
+
         #if the found asset is nt in the "found" list, add it to the assets list
         if this_asset not in found:
             assets.append(this_asset)
@@ -140,7 +188,7 @@ def find_assets(tag, found):
     return assets
 
 #returns a list of tags with direct links to this asset, ignoring any tags in the ignore list
-def find_asset_tags_direct(asset, ignore):
+def find_asset_tags_direct(asset, ignore=[]):
     #empty list to store found tags
     tags= []
     #find all edges linking a tag to the given asset
@@ -155,44 +203,47 @@ def find_asset_tags_direct(asset, ignore):
     return assets
 
 #returns a list of tags with direct links to this asset, ignoring any tags in the ignore list
-def find_asset_tags(asset, ignore):
+def find_asset_tags(asset, ignore=[]):
     #empty list to store found tags
     tags= []
     #find all edges linking a tag to the given asset
     tag_query = AssetEdge.objects.filter(asset_id__exact=asset.id)
     #for each edge found, retrieve the tag
     for link in tag_query:
-        this_tag = Tag.objects.filter(id__exact = link.tag_id)[0]
+        this_tag = Tag.objects.filter(id__exact = link.tag_id.id)[0]
         #if the found tag is not in the ignore list, add it to the tags list
         if this_tag not in ignore:
-            assets.append(this_tag)
+            tags.append(this_tag)
     #return the tags list
-    return assets
+    return tags
 
+
+#returns a list of tags that imply the given tag, ignoring any tags in the ignore list
+def find_parent_tags(tag, ignore=[]):
 #returns a list of tags that directly imply the given tag, ignoring any tags in the ignore list
-def find_parent_tags(tag, ignore):
     #empty tags list to store found parent tags
     tags = []
     #find all edges with the given tag as the child tag
     tag_query = Edge.objects.filter(child_tag__exact = tag.id)
     #for each edge found, retreive the parent tag
     for link in tag_query:
-        this_tag = Tag.objects.filter(id__exact = link.parent_tag)[0]
+        this_tag = Tag.objects.filter(id__exact = link.parent_tag.id)[0]
         #if the parent tag is not in the ignore list, add it to the tags list
         if this_tag.id not in ignore:
             tags.append(this_tag)
     #return the tags list
     return tags
 
+    #returns a list of tags that the given tag implies, ignoring any tags in the ignore list
+def find_child_tags(tag, ignore=[]):
     #returns a list of tags that the given tag directly implies, ignoring any tags in the ignore list
-def find_child_tags(tag, ignore):
     #empty tags list to store found child tags
     tags = []
     #find all edges with the given tag as the parent tag
     tag_query = Edge.objects.filter(parent_tag__exact = tag.id)
     #for each edge found, retreive the child tag
     for link in tag_query:
-        this_tag = Tag.objects.filter(id__exact = link.child_tag)[0]
+        this_tag = Tag.objects.filter(id__exact = link.child_tag.id)[0]
         #if the child tag is not in the ignore list, add it to the tags list
         if this_tag.id not in ignore:
             tags.append(this_tag)
@@ -248,6 +299,25 @@ def reachable_child(start, ignore):
         #add found assets to the list of assets
         #assets = assets + these_assets
     #return the list of found assets
+
+    #return assets
+
+#returns a list of alternate names for that tag
+def find_alternate_name(tag):
+    alternate_names = []
+    alternate_name_query = AlternateName.objects.filter(tag_id__exact = tag.id)
+    for name in alternate_name_query:
+        alternate_names.append(name)
+    return alternate_names
+
+#checks if the given name is an alternate name. If so, returns the tag id
+def check_tag_alternates(name):
+    alternate_name_query = AlternateName.objects.filter(name__exact = name)
+    if alternate_name_query.exists():
+        return alternate_name_query[0].tag_id
+    else:
+        return None
+
     #return assets
 
 #finds all assets linked to a parent tag in an edge and links them to all the child tags of that edge
@@ -363,3 +433,4 @@ def add_tag(name):
     #return the tag with the given name
     return newtag
     
+

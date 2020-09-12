@@ -4,6 +4,8 @@ import uuid
 # Create your models here.
 class member_info(models.Model):
     student_number = models.IntegerField(default=00000000)
+    user_name = models.CharField(max_length = 50)
+    password = model.CharField(max_length = 50)
     member_name = models.CharField(max_length=100, null= False)
     notes = models.CharField(max_length=250)
     dob = models.DateField(null=False)

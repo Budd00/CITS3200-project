@@ -418,4 +418,9 @@ def add_tag(name):
     #return the tag with the given name
     return newtag
     
-
+def add_asset(name, public_notes, private_notes):
+    # if name is unused
+    if check_asset(name) == None:
+        new_asset = Asset.objects.create(name=name, pub_notes = public_notes, priv_notes = private_notes)
+        return new_asset
+    return None

@@ -1,11 +1,28 @@
+from .forms import AssetForm
 from django.shortcuts import render
-from django.http import HttpResponse
-from .models import check_asset, check_tag, find_assets_direct, check_tag_alternates
+from django.http import HttpResponse, HttpResponseRedirect
+from .models import check_asset, check_tag, find_assets_direct, check_tag_alternates, add_asset
 
 # Create your views here.
 def index(request):
     #return HttpResponse("Library Management Home Page :)")
     return render(request, "libapp/search.html")
+
+#page for asset entry
+def asset_entry(request):
+    if request.method == 'POST':
+        return HttpResponseRedirect('/libapp/')
+        form = AssetForm(request.POST)
+        if form.is_valid():
+            asset_name = form.cleaned_data['name']
+            public_notes = form.cleaned_data['public_notes']
+            private_notes = form.cleaned_data['private_notes']
+            add_asset(asset_name, public_notes, private_notes)
+            return HttpResponseRedirect('/libapp/')
+    else:
+        form = AssetForm()
+    
+    return render(request, 'libapp/asset-entry.html', {'form': form})
 
 #search result view
 def search_result(request):

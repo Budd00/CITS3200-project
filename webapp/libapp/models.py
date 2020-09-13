@@ -114,8 +114,9 @@ def link_asset(asset, tag, implied):
         if edge.tag_id == tag.id:
             exists = True
     if not exists:
-        newEdge = AssetEdge(asset_id = thisAsset.id, tag_id = thisTag.id, implied=implied)
+        newEdge = AssetEdge(asset_id = thisAsset, tag_id = thisTag, implied=implied)
         newEdge.save()
+        #AssetEdge.objects.create(asset_id = thisAsset, tag_id = thisTag, implied=implied)
 
     return
 

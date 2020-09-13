@@ -7,9 +7,10 @@
             <title>Asset Entry</title>
         </head>
     <body>
-        <form action='new-asset' method="POST" autocomplete="off">
+        <form  method="POST" autocomplete="off">
             {% csrf_token %}
-            {{ form }}
+
+             {{ form.as_p }}
 
             <input type="submit" value="Submit">
         </form>

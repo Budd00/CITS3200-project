@@ -1,28 +1,46 @@
 from .forms import AssetForm
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import check_asset, check_tag, find_assets_direct, check_tag_alternates, add_asset
+from .models import check_asset, check_tag, find_assets_direct, check_tag_alternates, add_asset, link_asset, Asset, find_asset_tags
 
-# Create your views here.
+# library database page
 def index(request):
     #return HttpResponse("Library Management Home Page :)")
+    asset_list = Asset.objects.all()
+    asset_dict = {}
+    for asset in asset_list:
+        tags = find_asset_tags(asset)
+        asset_dict[asset.name] = tags
+    context = {
+        'asset_dict':asset_dict
+    }
+    return render(request, "libapp/library.html", context)
+
+#search page
+def search(request):
     return render(request, "libapp/search.html")
 
-#page for asset entry
-def asset_entry(request):
+#page for asset creation
+def asset_create(request):
     if request.method == 'POST':
-        return HttpResponseRedirect('/libapp/')
         form = AssetForm(request.POST)
         if form.is_valid():
             asset_name = form.cleaned_data['name']
             public_notes = form.cleaned_data['public_notes']
             private_notes = form.cleaned_data['private_notes']
-            add_asset(asset_name, public_notes, private_notes)
-            return HttpResponseRedirect('/libapp/')
+            tags = form.cleaned_data['tags']
+            new_asset = add_asset(asset_name, public_notes, private_notes)
+            #If tags were selected
+            if tags.exists():
+                for tag in tags:
+                    link_asset(new_asset, tag, 0)
+
+            return HttpResponseRedirect('/library/')
     else:
         form = AssetForm()
+
     
-    return render(request, 'libapp/asset-entry.html', {'form': form})
+    return render(request, 'libapp/asset-create.html', {'form': form})
 
 #search result view
 def search_result(request):

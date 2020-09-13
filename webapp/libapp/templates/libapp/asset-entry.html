@@ -1,0 +1,18 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+
+            <meta charset="UTF-8">
+            <title>Asset Entry</title>
+        </head>
+    <body>
+        <form action='new-asset' method="POST" autocomplete="off">
+            {% csrf_token %}
+            {{ form }}
+
+            <input type="submit" value="Submit">
+        </form>
+        
+    </body>
+</html>

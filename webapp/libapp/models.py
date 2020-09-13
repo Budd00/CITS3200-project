@@ -157,7 +157,7 @@ def find_assets_direct(tag, found=[]):
     return assets
 
 #returns a list of assets with direct links to this tag, ignoring any assets in the found list
-def find_assets(tag, found):
+def find_assets(tag, found=[]):
     #empty list to store found assets
     assets= []
     #find all edges linking an asset to the given tag
@@ -237,7 +237,7 @@ def find_child_tags(tag, ignore=[]):
 
 #returns a list of all tags that are children of the given tag, directly or implicitly.
 #any tags in the ignore list are not checked or added
-def reachable_child(start, ignore):
+def reachable_child(start, ignore=[]):
     #create empty list to store tags that have been checked
     checked = []
     #create empty list to store tags that need to be checked (acts as a stacck)
@@ -307,16 +307,14 @@ def check_tag_alternates(name):
 
 #finds all assets linked to a parent tag in an edge and links them to all the child tags of that edge
 def link_assets_new(edge):
-    #create an empty ignore list
-    ignore=[]
     #find the parent tag linked to the edge
     this_parent = Tag.objects.filter(id__exact = edge.parent_tag)[0]
     #find the child tag linked to the edge
     this_child =  Tag.objects.filter(id__exact = edge.child_tag)[0]
     #find all assets already linked to the parent tag
-    assets = find_assets(this_parent, ignore)
+    assets = find_assets(this_parent)
     #find all tags that are children of the child tag
-    children = find_child_tags(this_parent, ignore)
+    children = find_child_tags(this_parent)
     #create a link between each asset and each tag found if non already exists
     for asset in assets:
         for tag in children:
@@ -325,10 +323,8 @@ def link_assets_new(edge):
 
 #check all assets linked to the given tag to ensure all implied links are still accurate
 def clear_false_links(tag):
-    #empty ignore list
-    ignore = []
     #find all assets linked to the given tag
-    assets = find_assets(tag, ignore)
+    assets = find_assets(tag)
     #for each asset, remove all implicit links and create new links to every tag that it is now implicitly linked to
     for asset in assets:
         #find all edges to the asset that are implied
@@ -337,7 +333,7 @@ def clear_false_links(tag):
         for edge in impl_edges:
             edge.delete()
         #find all tags directly linked to the asset
-        direct_tags = find_asset_tags_direct(asset, ignore)
+        direct_tags = find_asset_tags_direct(asset)
         #create list to store linkedt tags
         linked = []
         #add direct tags to the list of linked tags
@@ -355,15 +351,13 @@ def clear_false_links(tag):
 
 #remove implied links from the given asset due to the given tag
 def detach_tag(asset):
-    #empty ignore list
-    ignore = []
     #find all edges to the asset that are implied
     impl_edges = AssetEdge.objects.filter(asset_id__exact = asset.id).filter(implied__exact = 1)
     #delete all implied edges
     for edge in impl_edges:
         edge.delete()
     #find all tags directly linked to the asset
-    direct_tags = find_asset_tags_direct(asset, ignore)
+    direct_tags = find_asset_tags_direct(asset)
     #create list to store linked tags
     linked = []
     #add direct tags to the list of linked tags

@@ -39,7 +39,7 @@ def asset_create(request):
     else:
         form = AssetForm()
 
-    
+
     return render(request, 'libapp/asset-create.html', {'form': form})
 
 #search result view
@@ -61,7 +61,7 @@ def search_result(request):
 
         #if tag is found, find related assets
         if tag is not None:
-            
+
             asset_list = find_assets_direct(tag)
             #if related assets found
             if asset_list != []:

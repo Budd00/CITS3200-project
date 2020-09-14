@@ -11,45 +11,6 @@ def index(request):
     context = {
         'asset_dict':asset_dict
     }
-<<<<<<< HEAD
-    return render(request, "libapp/library.html", context)
-
-#search page
-def search(request):
-    return render(request, "libapp/search.html")
-
-#page for asset creation
-def asset_create(request):
-    if request.method == 'POST':
-        form = AssetForm(request.POST)
-        if form.is_valid():
-            asset_name = form.cleaned_data['name']
-            public_notes = form.cleaned_data['public_notes']
-            private_notes = form.cleaned_data['private_notes']
-            tags = form.cleaned_data['tags']
-            new_asset = add_asset(asset_name, public_notes, private_notes)
-            #If tags were selected
-            if tags.exists():
-                for tag in tags:
-                    link_asset(new_asset, tag, 0)
-
-            return HttpResponseRedirect('/library/')
-    else:
-        form = AssetForm()
-
-
-    return render(request, 'libapp/asset-create.html', {'form': form})
-
-#search result view
-def search_result(request):
-    result_list = []
-    context = {
-        'result_list':result_list
-    }
-    query = request.GET.get('q')
-    option = request.GET.get('option')
-=======
->>>>>>> 0da2a293638fd5112b77df784d518e902c6f2c9f
 
     #if the 'tag' radio button was selected
     if option == 'tag':

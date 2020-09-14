@@ -88,6 +88,21 @@ class AlternateName(models.Model):
     def __repr__(self):
         return self.name
 
+#check if the tag exists, if it doesn't, create one. returns the found/created tag
+def add_tag(name):
+    #search for a tag with the given name
+    if check_tag(name) == None:
+        new_tag = Tag.objects.create(name=name)
+        return new_tag
+    return None
+
+#check if the asset exists, if it doesn't, create one. returns the found/created asset
+def add_asset(name, public_notes, private_notes):
+    if check_asset(name) == None:
+        new_asset = Asset.objects.create(name=name, pub_notes = public_notes, priv_notes = private_notes)
+        return new_asset
+    return None
+
 #Given two tags, create an edge link from parent to child
 def link_tags(parent, child):
     #Check given tags are in database (only use if input is text(name) based)
@@ -165,7 +180,7 @@ def find_assets(tag, found=[]):
     asset_query = AssetEdge.objects.filter(tag_id__exact=tag.id)
     #for each edge found, retrieve the asset
     for link in asset_query:
-        this_asset = Asset.objects.filter(id__exact = link.asset_id)[0]
+        this_asset = Asset.objects.filter(id__exact = link.asset_id.id)[0]
 
         #if the found asset is nt in the "found" list, add it to the assets list
         if this_asset not in found:
@@ -309,9 +324,9 @@ def check_tag_alternates(name):
 #finds all assets linked to a parent tag in an edge and links them to all the child tags of that edge
 def link_assets_new(edge):
     #find the parent tag linked to the edge
-    this_parent = Tag.objects.filter(id__exact = edge.parent_tag)[0]
+    this_parent = Tag.objects.filter(id__exact = edge.parent_tag.id)[0]
     #find the child tag linked to the edge
-    this_child =  Tag.objects.filter(id__exact = edge.child_tag)[0]
+    this_child =  Tag.objects.filter(id__exact = edge.child_tag.id)[0]
     #find all assets already linked to the parent tag
     assets = find_assets(this_parent)
     #find all tags that are children of the child tag
@@ -402,20 +417,3 @@ def remove_asset_edge(asset, tag):
 
 
 
-#check if a tag exists, if it doesn't, create one. returns the found/created tag
-def add_tag(name):
-    #search for a tag with the given name
-    newtag = Tag.objects.filter(name__exact = name)[0]
-    #if the tag doesn't exist, create a new one
-    if newtag == None:
-        newtag = Tag(name=name)
-        newtag.save()
-    #return the tag with the given name
-    return newtag
-    
-def add_asset(name, public_notes, private_notes):
-    # if name is unused
-    if check_asset(name) == None:
-        new_asset = Asset.objects.create(name=name, pub_notes = public_notes, priv_notes = private_notes)
-        return new_asset
-    return None

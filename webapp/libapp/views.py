@@ -1,19 +1,17 @@
-from .forms import AssetForm
+from .forms import AssetItem,AssetForm, TagForm
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import check_asset, check_tag, find_assets_direct, check_tag_alternates, add_asset, link_asset, Asset, find_asset_tags
+from .models import check_asset, check_tag, find_assets_direct, check_tag_alternates, add_asset, add_tag, link_asset, link_tags, Asset, find_asset_tags
 
 # library database page
 def index(request):
-    #return HttpResponse("Library Management Home Page :)")
-    asset_list = Asset.objects.all()
+    query = request.GET.get('q')
+    option = request.GET.get('option')
     asset_dict = {}
-    for asset in asset_list:
-        tags = find_asset_tags(asset)
-        asset_dict[asset.name] = tags
     context = {
         'asset_dict':asset_dict
     }
+<<<<<<< HEAD
     return render(request, "libapp/library.html", context)
 
 #search page
@@ -50,6 +48,8 @@ def search_result(request):
     }
     query = request.GET.get('q')
     option = request.GET.get('option')
+=======
+>>>>>>> 0da2a293638fd5112b77df784d518e902c6f2c9f
 
     #if the 'tag' radio button was selected
     if option == 'tag':
@@ -67,23 +67,99 @@ def search_result(request):
             if asset_list != []:
                 #add each asset into asset_list
                 for asset in asset_list:
-                    result_list.append(asset.name)
-                return render(request, "libapp/search-result.html", context)
+                    tags = find_asset_tags(asset)
+                    asset_dict[asset.name] = tags
+                return render(request, "libapp/library.html", context)
             #if no related assets found
             else:
-                result_list.append('Tag found but is not tied to any assets')
-                return render(request, "libapp/search-result.html", context)
+                context['error_msg'] = "Tag found but not tied to any assets"
+                return render(request, "libapp/library.html", context)
         #logic goes here if tag not found
         else:
-            result_list.append('Tag not found')
-            return render(request, "libapp/search-result.html", context)
+            context['error_msg'] = "Tag not found"
+            return render(request, "libapp/library.html", context)
 
     #if the 'asset' radio button was selected
     elif option == 'asset':
         asset = check_asset(query)
+        #asset found
         if asset is not None:
-            result_list.append(asset.name)
-            return render(request, "libapp/search-result.html", context)
+            #find related tags
+            tags = find_asset_tags(asset)
+            asset_dict[asset] = tags
+            return render(request, "libapp/library.html", context)
+        #no such asset found
         else:
-            result_list.append('No assets found')
-            return render(request, "libapp/search-result.html", context)
+            context['error_msg'] = "No assets found"
+            return render(request, "libapp/library.html", context)
+    else:
+        #retrieves all assets
+        asset_list = Asset.objects.all()
+        #populates asset_dict in format {asset_1:[tag_1,tag_2],asset_2:[tag_1,tag_4],asset_3...}
+        for asset in asset_list:
+            tags = find_asset_tags(asset)
+            asset_dict[asset] = tags
+        context = {
+            'asset_dict':asset_dict
+        }
+        return render(request, "libapp/library.html", context)
+
+#page for asset creation
+def asset_create(request):
+    if request.method == 'POST':
+        form = AssetItem(request.POST)
+        if form.is_valid():
+            asset_name = form.cleaned_data['name']
+            public_notes = form.cleaned_data['public_notes']
+            private_notes = form.cleaned_data['private_notes']
+            tags = form.cleaned_data['tags']
+            new_asset = add_asset(asset_name, public_notes, private_notes)
+            if new_asset == None:
+                return render(request, 'libapp/fail.html', {'error':'Asset already exists'})
+            #If tags were selected
+            if tags.exists():
+                for tag in tags:
+                    link_asset(new_asset, tag, 0)
+
+            return HttpResponseRedirect('/library/')
+    else:
+        form = AssetItem()
+
+    return render(request, 'libapp/asset-create.html', {'form': form})
+
+#page for asset editing. 
+#Navigation to asset editing page occurs when user clicks on any one of the assets at the library homepage
+#The editing page for that particular asset shows up as a result
+def asset_edit(request):
+    asset_name = request.GET.get('asset')
+    asset = check_asset(asset_name)
+    context = {}
+    if request.method == 'POST':
+        form = AssetForm(request.POST)
+        if form.is_valid():
+            asset.name = form.cleaned_data['name']
+            asset.pub_notes = form.cleaned_data['pub_notes']
+            asset.priv_notes = form.cleaned_data['priv_notes']
+            asset.save()
+            return HttpResponseRedirect('/library/')
+    else:
+        tags = find_asset_tags(asset)
+        form = AssetForm(instance=asset)
+        context['form'] = form
+        return render(request, 'libapp/asset-edit.html', context)
+
+#page for tag creation
+def tag_create(request):
+    if request.method == 'POST':
+        form = TagForm(request.POST)
+        if form.is_valid():
+            tag_name = form.cleaned_data['name']
+            new_tag = add_tag(tag_name)
+            if new_tag == None:
+                return render(request, 'libapp/fail.html', {'error':'Tag already exists'})
+            return HttpResponseRedirect('/library/')
+    else:
+        form = TagForm()
+    
+    return render(request, 'libapp/tag-create.html', {'form': form})
+

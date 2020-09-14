@@ -96,7 +96,7 @@ def link_tags(parent, child):
     newEdge = Edge(parent_tag = parent, child_tag = child)
 
     newEdge.save()
-    link_assets_new(newEdge)
+    implied_assets_new(newEdge)
     return
 
 #Given an asset and a tag, link the tag to the asset
@@ -116,6 +116,7 @@ def link_asset(asset, tag, implied):
     if not exists:
         newEdge = AssetEdge(asset_id = thisAsset.id, tag_id = thisTag.id, implied=implied)
         newEdge.save()
+        implied_assets_from_direct(newEdge)
 
     return
 
@@ -306,7 +307,7 @@ def check_tag_alternates(name):
     #return assets
 
 #finds all assets linked to a parent tag in an edge and links them to all the child tags of that edge
-def link_assets_new(edge):
+def implied_assets_new(edge):
     #find the parent tag linked to the edge
     this_parent = Tag.objects.filter(id__exact = edge.parent_tag)[0]
     #find the child tag linked to the edge
@@ -314,11 +315,27 @@ def link_assets_new(edge):
     #find all assets already linked to the parent tag
     assets = find_assets(this_parent)
     #find all tags that are children of the child tag
-    children = find_child_tags(this_parent)
-    #create a link between each asset and each tag found if non already exists
+    children = find_child_tags(this_child)
+    #create a link between each asset and each tag found if none already exists
     for asset in assets:
+        #link the child tag to the asset
+        link_asset(asset, this_child, 1)
+        #link the other children to the asset
         for tag in children:
             link_asset(asset, tag, 1)
+    return
+
+#finds all tags implied by a direct link between an asset and a tag, then creates an implied link between the asset and all the children of that tag
+def implied_assets_from_direct(edge):
+    #find the parent asset linked to the edge
+    this_asset = Asset.objects.filter(id__exact = edge.asset_id)[0]
+    #find the child tag linked to the edge
+    this_child =  Tag.objects.filter(id__exact = edge.tag_id)[0]
+    #find all tags that are children of the child tag
+    children = find_child_tags(this_child)
+    #create a link between the asset and each tag found if none already exists
+    for tag in children:
+        link_asset(asset, tag, 1)
     return
 
 #check all assets linked to the given tag to ensure all implied links are still accurate

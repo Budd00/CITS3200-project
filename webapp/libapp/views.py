@@ -65,6 +65,9 @@ def index(request):
         }
         return render(request, "libapp/library.html", context)
 
+def refresh(request):
+    return HttpResponseRedirect('/library/')
+
 #page for asset creation
 def asset_create(request):
     if request.method == 'POST':

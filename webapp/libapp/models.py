@@ -215,6 +215,8 @@ def find_asset_tags_direct(asset, ignore=[]):
 
 #returns a list of tags with direct links to this asset, ignoring any tags in the ignore list
 def find_asset_tags(asset, ignore=[]):
+    #list to store tags that have been found
+    found = []
     #empty list to store found tags
     tags= []
     #find all edges linking a tag to the given asset
@@ -223,8 +225,9 @@ def find_asset_tags(asset, ignore=[]):
     for link in tag_query:
         this_tag = Tag.objects.filter(id__exact = link.tag_id.id)[0]
         #if the found tag is not in the ignore list, add it to the tags list
-        if this_tag not in ignore:
+        if this_tag not in ignore and this_tag not in found:
             tags.append(this_tag)
+            found.append(this_tag)
     #return the tags list
     return tags
 

@@ -11,7 +11,7 @@ def index(request):
     context = {
         'asset_dict':asset_dict
     }
-<<<<<<< HEAD
+
     return render(request, "libapp/library.html", context)
 
 #search page
@@ -48,8 +48,6 @@ def search_result(request):
     }
     query = request.GET.get('q')
     option = request.GET.get('option')
-=======
->>>>>>> 0da2a293638fd5112b77df784d518e902c6f2c9f
 
     #if the 'tag' radio button was selected
     if option == 'tag':

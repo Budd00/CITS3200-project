@@ -112,7 +112,7 @@ def link_tags(parent, child):
 
     newEdge.save()
     link_assets_new(newEdge)
-    return
+    return newEdge
 
 #Given an asset and a tag, link the tag to the asset
 def link_asset(asset, tag, implied):

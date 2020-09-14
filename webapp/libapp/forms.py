@@ -1,9 +1,13 @@
 from django import forms
 from .models import Tag, Asset
-from django.forms.models import ModelMultipleChoiceField
+from django.forms.models import ModelMultipleChoiceField, ModelChoiceField
 from django.forms import ModelForm
 
 class MyModelMultipleChoiceField(ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        return "%s" % (obj.name)
+
+class MyModelChoiceField(ModelChoiceField):
     def label_from_instance(self, obj):
         return "%s" % (obj.name)
 
@@ -27,3 +31,28 @@ class AssetForm(ModelForm):
 
 class TagForm(forms.Form):
     name = forms.CharField(max_length=100)
+
+
+    parent_tags = MyModelMultipleChoiceField(
+        queryset = Tag.objects.all(),
+        widget = forms.CheckboxSelectMultiple,
+        required = False
+    )
+
+    child_tags = MyModelMultipleChoiceField(
+        queryset = Tag.objects.all(),
+        widget = forms.CheckboxSelectMultiple,
+        required = False
+    )
+
+class LinkForm(forms.Form):
+    parent_tag = MyModelChoiceField(
+        queryset = Tag.objects.all(),
+        widget = forms.Select,
+        required = True
+    )
+    child_tag = MyModelChoiceField(
+        queryset = Tag.objects.all(),
+        widget = forms.Select,
+        required = True
+    )

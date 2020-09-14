@@ -1,4 +1,4 @@
-from .forms import AssetItem,AssetForm, TagForm
+from .forms import AssetItem,AssetForm, TagForm, LinkForm
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import check_asset, check_tag, find_assets_direct, check_tag_alternates, add_asset, add_tag, link_asset, link_tags, Asset, find_asset_tags
@@ -11,43 +11,6 @@ def index(request):
     context = {
         'asset_dict':asset_dict
     }
-
-    return render(request, "libapp/library.html", context)
-
-#search page
-def search(request):
-    return render(request, "libapp/search.html")
-
-#page for asset creation
-def asset_create(request):
-    if request.method == 'POST':
-        form = AssetForm(request.POST)
-        if form.is_valid():
-            asset_name = form.cleaned_data['name']
-            public_notes = form.cleaned_data['public_notes']
-            private_notes = form.cleaned_data['private_notes']
-            tags = form.cleaned_data['tags']
-            new_asset = add_asset(asset_name, public_notes, private_notes)
-            #If tags were selected
-            if tags.exists():
-                for tag in tags:
-                    link_asset(new_asset, tag, 0)
-
-            return HttpResponseRedirect('/library/')
-    else:
-        form = AssetForm()
-
-
-    return render(request, 'libapp/asset-create.html', {'form': form})
-
-#search result view
-def search_result(request):
-    result_list = []
-    context = {
-        'result_list':result_list
-    }
-    query = request.GET.get('q')
-    option = request.GET.get('option')
 
     #if the 'tag' radio button was selected
     if option == 'tag':
@@ -152,12 +115,36 @@ def tag_create(request):
         form = TagForm(request.POST)
         if form.is_valid():
             tag_name = form.cleaned_data['name']
+            parent_tags = form.cleaned_data['parent_tags']
+            child_tags = form.cleaned_data['child_tags']
             new_tag = add_tag(tag_name)
             if new_tag == None:
                 return render(request, 'libapp/fail.html', {'error':'Tag already exists'})
+            
+            if parent_tags.exists():
+                for ptag in parent_tags:
+                    link_tags(ptag, new_tag)
+            if child_tags.exists():
+                for ctag in child_tags:
+                    link_tags(new_tag, ctag)
             return HttpResponseRedirect('/library/')
     else:
         form = TagForm()
     
     return render(request, 'libapp/tag-create.html', {'form': form})
+
+def tag_link(request):
+    if request.method == 'POST':
+        form = LinkForm(request.POST)
+        if form.is_valid():
+            parent_tag = form.cleaned_data['parent_tag']
+            child_tag = form.cleaned_data['child_tag']
+            new_edge = link_tags(parent_tag, child_tag)
+            if new_edge == None:
+                return render(request, 'libapp/fail.html', {'error':'Link already exists'})
+            return HttpResponseRedirect('/library/')
+    else:
+        form = LinkForm()
+
+    return render(request, 'libapp/tag-link.html', {'form': form})
 

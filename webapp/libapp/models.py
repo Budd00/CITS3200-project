@@ -105,14 +105,16 @@ def add_asset(name, public_notes, private_notes):
 
 #Given two tags, create an edge link from parent to child
 def link_tags(parent, child):
-    #Check given tags are in database (only use if input is text(name) based)
-    #parTag = tag_by_name(parent)
-    #chilTag = tag_by_name(child)
-    newEdge = Edge(parent_tag = parent, child_tag = child)
-
-    newEdge.save()
-    link_assets_new(newEdge)
-    return newEdge
+    #check that the edge doesn't already exist
+    existingEdge = Edge.objects.filter(parent_tag__exact = parent.id).filter(child_tag__exact = child.id)
+    if len(existingEdge) == 0:
+        #if it doesn't exist, create a new edge
+        newEdge = Edge(parent_tag = parent, child_tag = child)
+        newEdge.save()
+        #check for any new implied loinks between assets and tags
+        link_assets_new(newEdge)
+        return newEdge
+    return None
 
 #Given an asset and a tag, link the tag to the asset
 def link_asset(asset, tag, implied):
@@ -131,9 +133,10 @@ def link_asset(asset, tag, implied):
     if not exists:
         newEdge = AssetEdge(asset_id = thisAsset, tag_id = thisTag, implied=implied)
         newEdge.save()
+        return newEdge
         #AssetEdge.objects.create(asset_id = thisAsset, tag_id = thisTag, implied=implied)
 
-    return
+    return None
 
 #checks if the given tag exists
 def check_tag(tag_name):

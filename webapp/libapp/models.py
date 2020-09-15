@@ -38,6 +38,9 @@ class Tag(models.Model):
     def increase_pop(self):
         self.popularity += 1
 
+    def child(self):
+        return find_child_tags(self)
+
 #Create tag edges table to track the connections in the graph
 class Edge(models.Model):
 
@@ -140,7 +143,7 @@ def link_asset(asset, tag, implied):
 
 #checks if the given tag exists
 def check_tag(tag_name):
-    tag_query = Tag.objects.filter(name__exact=tag_name)
+    tag_query = Tag.objects.filter(name__iexact=tag_name)
     #returns the tag if exists
     if tag_query.exists():
         return tag_query[0]
@@ -149,7 +152,7 @@ def check_tag(tag_name):
 
 #checks if the given asset exists
 def check_asset(asset_name):
-    asset_query = Asset.objects.filter(name__exact=asset_name)
+    asset_query = Asset.objects.filter(name__iexact=asset_name)
     #returns the asset if exists
     if asset_query.exists():
         return asset_query[0]

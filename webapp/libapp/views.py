@@ -8,10 +8,7 @@ def index(request):
     query = request.GET.get('q')
     option = request.GET.get('option')
     asset_dict = {}
-    context = {
-        'asset_dict':asset_dict
-    }
-<<<<<<< HEAD
+    context = {'asset_dict':asset_dict}
     return render(request, "libapp/library.html", context)
 
 #search page
@@ -48,8 +45,6 @@ def search_result(request):
     }
     query = request.GET.get('q')
     option = request.GET.get('option')
-=======
->>>>>>> 0da2a293638fd5112b77df784d518e902c6f2c9f
 
     #if the 'tag' radio button was selected
     if option == 'tag':
@@ -127,7 +122,7 @@ def asset_create(request):
 
     return render(request, 'libapp/asset-create.html', {'form': form})
 
-#page for asset editing. 
+#page for asset editing.
 #Navigation to asset editing page occurs when user clicks on any one of the assets at the library homepage
 #The editing page for that particular asset shows up as a result
 def asset_edit(request):
@@ -160,6 +155,5 @@ def tag_create(request):
             return HttpResponseRedirect('/library/')
     else:
         form = TagForm()
-    
-    return render(request, 'libapp/tag-create.html', {'form': form})
 
+    return render(request, 'libapp/tag-create.html', {'form': form})

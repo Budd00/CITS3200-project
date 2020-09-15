@@ -112,10 +112,9 @@ def link_tags(parent, child):
     existingEdge = Edge.objects.filter(parent_tag__exact = parent.id).filter(child_tag__exact = child.id)
     if len(existingEdge) == 0:
         #if it doesn't exist, create a new edge
-        newEdge = Edge(parent_tag = parent, child_tag = child)
-        newEdge.save()
-        #check for any new implied loinks between assets and tags
-        link_assets_new(newEdge)
+        newEdge = Edge.objects.create(parent_tag = parent, child_tag = child)
+        #check for any new implied links between assets and tags
+        implied_assets_new(newEdge)
         return newEdge
     return None
 
@@ -123,7 +122,10 @@ def link_tags(parent, child):
 def link_asset(asset, tag, implied):
     thisAsset = asset
     thisTag = tag
-
+    print("linking")
+    print(thisAsset.name)
+    print(thisAsset.id)
+    print(thisTag.name)
     #check that there isn't already a link
     #find all edges to the asset
     existingEdges = AssetEdge.objects.filter(asset_id__exact = asset.id)
@@ -131,14 +133,19 @@ def link_asset(asset, tag, implied):
     exists = False
     #check each edge to see if the given tag is already linked
     for edge in existingEdges:
-        if edge.tag_id == tag.id:
+        if edge.tag_id == thisTag.id:
+            print(edge.asset_id)
             exists = True
     if not exists:
-        newEdge = AssetEdge(asset_id = thisAsset, tag_id = thisTag, implied=implied)
-        newEdge.save()
-        return newEdge
+        print("creating")
+        newEdge = AssetEdge.objects.create(asset_id = thisAsset, tag_id = thisTag, implied=implied)
+        print(newEdge.asset_id)
         #AssetEdge.objects.create(asset_id = thisAsset, tag_id = thisTag, implied=implied)
-
+        #only check if this is a direct edge
+        if implied == 0:
+            #check for any new implied links between assets and tags
+            implied_assets_from_direct(newEdge)
+        return newEdge
     return None
 
 #checks if the given tag exists
@@ -211,6 +218,8 @@ def find_asset_tags_direct(asset, ignore=[]):
 
 #returns a list of tags with direct links to this asset, ignoring any tags in the ignore list
 def find_asset_tags(asset, ignore=[]):
+    #list to store tags that have been found
+    found = []
     #empty list to store found tags
     tags= []
     #find all edges linking a tag to the given asset
@@ -219,8 +228,9 @@ def find_asset_tags(asset, ignore=[]):
     for link in tag_query:
         this_tag = Tag.objects.filter(id__exact = link.tag_id.id)[0]
         #if the found tag is not in the ignore list, add it to the tags list
-        if this_tag not in ignore:
+        if this_tag not in ignore and this_tag not in found:
             tags.append(this_tag)
+            found.append(this_tag)
     #return the tags list
     return tags
 
@@ -328,7 +338,8 @@ def check_tag_alternates(name):
     #return assets
 
 #finds all assets linked to a parent tag in an edge and links them to all the child tags of that edge
-def link_assets_new(edge):
+def implied_assets_new(edge):
+    print("heya")
     #find the parent tag linked to the edge
     this_parent = Tag.objects.filter(id__exact = edge.parent_tag.id)[0]
     #find the child tag linked to the edge
@@ -336,11 +347,30 @@ def link_assets_new(edge):
     #find all assets already linked to the parent tag
     assets = find_assets(this_parent)
     #find all tags that are children of the child tag
-    children = find_child_tags(this_parent)
+    children = reachable_child(this_child)
     #create a link between each asset and each tag found if non already exists
+    print(this_parent.name)
+    print(this_child.name)
     for asset in assets:
+        print(asset.name)
+        #add a link to the initial child tag
+        link_asset(asset, this_child, 1)
         for tag in children:
             link_asset(asset, tag, 1)
+    return
+
+#finds all tags implied by a direct link between an asset and a tag, then creates an implied link between the asset and all the children of that tag
+def implied_assets_from_direct(edge):
+    #find the parent asset linked to the edge
+    this_asset = Asset.objects.filter(id__exact = edge.asset_id.id)[0]
+    #find the child tag linked to the edge
+    this_child =  Tag.objects.filter(id__exact = edge.tag_id.id)[0]
+    #find all tags that are children of the child tag
+    children = reachable_child(this_child)
+    print(this_asset.name, this_child.name, children)
+    #create a link between the asset and each tag found if none already exists
+    for tag in children:
+        link_asset(this_asset, tag, 1)
     return
 
 #check all assets linked to the given tag to ensure all implied links are still accurate

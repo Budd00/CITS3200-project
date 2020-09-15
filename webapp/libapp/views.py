@@ -81,6 +81,8 @@ def tree(tags, hierarchy):
         return hierarchy
     else:
         return hierarchy
+def refresh(request):
+    return HttpResponseRedirect('/library/')
 
 #page for asset creation
 def asset_create(request):

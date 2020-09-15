@@ -9,4 +9,5 @@ urlpatterns = [
     path('tag-create/', views.tag_create, name='tag_create'),
     path('asset-edit/', views.asset_edit, name='asset_edit'),
     path('tag-link/', views.tag_link, name='tag_link'),
+    path('delete/',views.asset_delete, name='asset_delete')
 ]

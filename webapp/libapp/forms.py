@@ -26,11 +26,12 @@ class AssetItem(forms.Form):
 class AssetForm(ModelForm):
     class Meta:
         model = Asset
-        fields = ['name', 'pub_notes', 'priv_notes']
+        fields = ['name', 'pub_notes', 'priv_notes', 'tags']
 
     tags = MyModelMultipleChoiceField(
         queryset=Tag.objects.all(),
-        widget = forms.CheckboxSelectMultiple
+        widget = forms.CheckboxSelectMultiple,
+        required = False
     )
 
 

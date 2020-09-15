@@ -1,12 +1,13 @@
 from .forms import AssetItem,AssetForm, TagForm, LinkForm
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import check_asset, check_tag, find_assets, check_tag_alternates, add_asset, add_tag, link_asset, link_tags, Asset, find_asset_tags, find_asset_tags_direct
+from .models import check_asset, check_tag, find_assets, check_tag_alternates, add_asset, add_tag, link_asset, link_tags, Asset, find_asset_tags, find_asset_tags_direct, remove_asset_edge
 
 # library database page
 def index(request):
     query = request.GET.get('q')
     option = request.GET.get('option')
+
     asset_dict = {}
     if option == None:
         option = ''
@@ -69,6 +70,15 @@ def index(request):
             asset_dict[asset] = tree(tags, [])
         return render(request, "libapp/library.html", context)
 
+def asset_delete(request):
+    asset_name = request.GET.get('asset')
+    asset = check_asset(asset_name)
+    tags = find_asset_tags_direct(asset)
+    for tag in tags:
+        remove_asset_edge(asset, tag)
+    asset.delete()
+    return HttpResponseRedirect('/library/')
+
 #recursive function for printing out the tag hierarchy
 def tree(tags, hierarchy):
     if tags:
@@ -87,11 +97,11 @@ def refresh(request):
 #page for asset creation
 def asset_create(request):
     if request.method == 'POST':
-        form = AssetItem(request.POST)
+        form = AssetForm(request.POST)
         if form.is_valid():
             asset_name = form.cleaned_data['name']
-            public_notes = form.cleaned_data['public_notes']
-            private_notes = form.cleaned_data['private_notes']
+            public_notes = form.cleaned_data['pub_notes']
+            private_notes = form.cleaned_data['priv_notes']
             tags = form.cleaned_data['tags']
             new_asset = add_asset(asset_name, public_notes, private_notes)
             if new_asset == None:
@@ -100,10 +110,11 @@ def asset_create(request):
             if tags.exists():
                 for tag in tags:
                     link_asset(new_asset, tag, 0)
+                    new_asset.tags.add(tag)
 
             return HttpResponseRedirect('/library/')
     else:
-        form = AssetItem()
+        form = AssetForm()
 
     return render(request, 'libapp/asset-create.html', {'form': form})
 
@@ -117,10 +128,26 @@ def asset_edit(request):
     if request.method == 'POST':
         form = AssetForm(request.POST)
         if form.is_valid():
+            
             asset.name = form.cleaned_data['name']
             asset.pub_notes = form.cleaned_data['pub_notes']
             asset.priv_notes = form.cleaned_data['priv_notes']
+            tags = form.cleaned_data['tags']
+            if tags.exists():
+                asset.tags.clear()
+                linked_tags = find_asset_tags_direct(asset)
+                for tag in linked_tags:
+                    remove_asset_edge(asset, tag)
+                for tag in tags:
+                    link_asset(asset, tag, 0)
+                    asset.tags.add(tag)
+            else:
+                asset.tags.clear()
+                linked_tags = find_asset_tags_direct(asset)
+                for tag in linked_tags:
+                    remove_asset_edge(asset, tag)                
             asset.save()
+            
             return HttpResponseRedirect('/library/')
     else:
         #tags = find_asset_tags(asset)

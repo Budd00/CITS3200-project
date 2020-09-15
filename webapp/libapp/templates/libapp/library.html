@@ -14,7 +14,7 @@
         </head>
     <body>
         <h1>Library Database</h1>
-        <a href='tag-link'>Link Tag</a>
+        
         <div>
             Search for a game via name or tag!
           </div>
@@ -39,6 +39,7 @@
                 <input name="q" type="text" placeholder="Search.." id="input">
             </form>
         </div>
+        <p></p>
         {% if asset_dict %}
             <table>
                 <tr>
@@ -46,6 +47,7 @@
                     <th>Tags</th>
                     <th>Public Notes</th>
                     <th>Private Notes</th>
+                    <th>Delete</th>
                 </tr>
                 {% for asset, hierarchy in asset_dict.items %}
                 <tr>
@@ -67,6 +69,13 @@
                     </td>
                     <td>
                         {{ asset.priv_notes }}
+                    </td>
+                    <td>
+                        <form action='delete/' method="GET" autocomplete="off">
+                            {% csrf_token %}
+                            <input type="submit" value="Delete">
+                            <input name='asset' type='text' value='{{ asset.name }}' style="display:none">
+                        </form>
                     </td>
                 </tr>
                 {% endfor %}

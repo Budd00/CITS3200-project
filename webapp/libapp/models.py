@@ -4,21 +4,6 @@ import uuid
 # Create your models here.
 #create asset table
 #!!!---Placeholder---!!!
-class Asset(models.Model):
-    
-    #primary key
-    id = models.UUIDField(default=uuid.uuid4, primary_key = True)
-    #name
-    name = models.CharField(max_length = 64)
-    #Any notes for the public to read. ie. description
-    pub_notes = models.TextField(blank=True)
-    #Any notes not for the public to read. ie. missing peices, maintenance issues
-    priv_notes = models.TextField(blank=True)
-
-    #return this asset name
-    def __repr__(self):
-        return self.name
-
 #Create tag table
 class Tag(models.Model):
 
@@ -40,6 +25,22 @@ class Tag(models.Model):
 
     def child(self):
         return find_child_tags(self)
+
+class Asset(models.Model):
+    
+    #primary key
+    id = models.UUIDField(default=uuid.uuid4, primary_key = True)
+    #name
+    name = models.CharField(max_length = 64)
+    #Any notes for the public to read. ie. description
+    pub_notes = models.TextField(blank=True)
+    #Any notes not for the public to read. ie. missing peices, maintenance issues
+    priv_notes = models.TextField(blank=True)
+
+    tags = models.ManyToManyField(Tag)
+    #return this asset name
+    def __repr__(self):
+        return self.name
 
 #Create tag edges table to track the connections in the graph
 class Edge(models.Model):

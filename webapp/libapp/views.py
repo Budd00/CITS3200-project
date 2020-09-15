@@ -1,4 +1,4 @@
-from .forms import AssetItem,AssetForm, TagForm
+from .forms import AssetItem,AssetForm, TagForm, LinkForm
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import check_asset, check_tag, find_assets_direct, check_tag_alternates, add_asset, add_tag, link_asset, link_tags, Asset, find_asset_tags
@@ -8,6 +8,7 @@ def index(request):
     query = request.GET.get('q')
     option = request.GET.get('option')
     asset_dict = {}
+<<<<<<< HEAD
     context = {'asset_dict':asset_dict}
     return render(request, "libapp/library.html", context)
 
@@ -45,6 +46,11 @@ def search_result(request):
     }
     query = request.GET.get('q')
     option = request.GET.get('option')
+=======
+    context = {
+        'asset_dict':asset_dict
+    }
+>>>>>>> 8fcc4ea3c858d29f41f1cb26c89cd20e4859646d
 
     #if the 'tag' radio button was selected
     if option == 'tag':
@@ -149,11 +155,38 @@ def tag_create(request):
         form = TagForm(request.POST)
         if form.is_valid():
             tag_name = form.cleaned_data['name']
+            parent_tags = form.cleaned_data['parent_tags']
+            child_tags = form.cleaned_data['child_tags']
             new_tag = add_tag(tag_name)
             if new_tag == None:
                 return render(request, 'libapp/fail.html', {'error':'Tag already exists'})
+            
+            if parent_tags.exists():
+                for ptag in parent_tags:
+                    link_tags(ptag, new_tag)
+            if child_tags.exists():
+                for ctag in child_tags:
+                    link_tags(new_tag, ctag)
             return HttpResponseRedirect('/library/')
     else:
         form = TagForm()
 
+<<<<<<< HEAD
     return render(request, 'libapp/tag-create.html', {'form': form})
+=======
+def tag_link(request):
+    if request.method == 'POST':
+        form = LinkForm(request.POST)
+        if form.is_valid():
+            parent_tag = form.cleaned_data['parent_tag']
+            child_tag = form.cleaned_data['child_tag']
+            new_edge = link_tags(parent_tag, child_tag)
+            if new_edge == None:
+                return render(request, 'libapp/fail.html', {'error':'Link already exists'})
+            return HttpResponseRedirect('/library/')
+    else:
+        form = LinkForm()
+
+    return render(request, 'libapp/tag-link.html', {'form': form})
+
+>>>>>>> 8fcc4ea3c858d29f41f1cb26c89cd20e4859646d

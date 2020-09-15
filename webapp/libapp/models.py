@@ -133,7 +133,7 @@ def link_asset(asset, tag, implied):
     exists = False
     #check each edge to see if the given tag is already linked
     for edge in existingEdges:
-        if edge.tag_id == thisTag.id:
+        if edge.tag_id.id == thisTag.id:
             print(edge.asset_id)
             exists = True
     if not exists:
@@ -209,12 +209,12 @@ def find_asset_tags_direct(asset, ignore=[]):
     tag_query = AssetEdge.objects.filter(asset_id__exact=asset.id)
     #for each edge found, retrieve the tag
     for link in tag_query:
-        this_tag = Tag.objects.filter(id__exact = link.tag_id)[0]
+        this_tag = Tag.objects.filter(id__exact = link.tag_id.id)[0]
         #if the found tag is not in the ignore list, and is a direct link, add it to the tags list
         if this_tag not in ignore and (link.implied == 0):
-            assets.append(this_tag)
+            tags.append(this_tag)
     #return the tags list
-    return assets
+    return tags
 
 #returns a list of tags with direct links to this asset, ignoring any tags in the ignore list
 def find_asset_tags(asset, ignore=[]):

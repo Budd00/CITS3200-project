@@ -137,12 +137,12 @@ def link_asset(asset, tag, implied):
         print("creating")
         newEdge = AssetEdge.objects.create(asset_id = thisAsset, tag_id = thisTag, implied=implied)
         print(newEdge.asset_id)
-        return newEdge
         #AssetEdge.objects.create(asset_id = thisAsset, tag_id = thisTag, implied=implied)
         #only check if this is a direct edge
         if implied == 0:
             #check for any new implied links between assets and tags
             implied_assets_from_direct(newEdge)
+        return newEdge
     return None
 
 #checks if the given tag exists
@@ -344,7 +344,7 @@ def implied_assets_new(edge):
     #find all assets already linked to the parent tag
     assets = find_assets(this_parent)
     #find all tags that are children of the child tag
-    children = find_child_tags(this_child)
+    children = reachable_child(this_child)
     #create a link between each asset and each tag found if non already exists
     print(this_parent.name)
     print(this_child.name)
@@ -359,14 +359,15 @@ def implied_assets_new(edge):
 #finds all tags implied by a direct link between an asset and a tag, then creates an implied link between the asset and all the children of that tag
 def implied_assets_from_direct(edge):
     #find the parent asset linked to the edge
-    this_asset = Asset.objects.filter(id__exact = edge.asset_id)[0]
+    this_asset = Asset.objects.filter(id__exact = edge.asset_id.id)[0]
     #find the child tag linked to the edge
-    this_child =  Tag.objects.filter(id__exact = edge.tag_id)[0]
+    this_child =  Tag.objects.filter(id__exact = edge.tag_id.id)[0]
     #find all tags that are children of the child tag
-    children = find_child_tags(this_child)
+    children = reachable_child(this_child)
+    print(this_asset.name, this_child.name, children)
     #create a link between the asset and each tag found if none already exists
     for tag in children:
-        link_asset(asset, tag, 1)
+        link_asset(this_asset, tag, 1)
     return
 
 #check all assets linked to the given tag to ensure all implied links are still accurate

@@ -8,7 +8,6 @@ def index(request):
     query = request.GET.get('q')
     option = request.GET.get('option')
     asset_dict = {}
-<<<<<<< HEAD
     context = {'asset_dict':asset_dict}
     return render(request, "libapp/library.html", context)
 
@@ -46,11 +45,11 @@ def search_result(request):
     }
     query = request.GET.get('q')
     option = request.GET.get('option')
-=======
+
     context = {
         'asset_dict':asset_dict
     }
->>>>>>> 8fcc4ea3c858d29f41f1cb26c89cd20e4859646d
+
 
     #if the 'tag' radio button was selected
     if option == 'tag':
@@ -160,7 +159,7 @@ def tag_create(request):
             new_tag = add_tag(tag_name)
             if new_tag == None:
                 return render(request, 'libapp/fail.html', {'error':'Tag already exists'})
-            
+
             if parent_tags.exists():
                 for ptag in parent_tags:
                     link_tags(ptag, new_tag)
@@ -171,9 +170,9 @@ def tag_create(request):
     else:
         form = TagForm()
 
-<<<<<<< HEAD
+
     return render(request, 'libapp/tag-create.html', {'form': form})
-=======
+
 def tag_link(request):
     if request.method == 'POST':
         form = LinkForm(request.POST)
@@ -188,5 +187,3 @@ def tag_link(request):
         form = LinkForm()
 
     return render(request, 'libapp/tag-link.html', {'form': form})
-
->>>>>>> 8fcc4ea3c858d29f41f1cb26c89cd20e4859646d

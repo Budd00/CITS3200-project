@@ -15,6 +15,7 @@ def index(request):
         'option' : option
     }
 
+
     #if the 'tag' radio button was selected
     if option == 'tag':
         #checks if tag exists
@@ -104,7 +105,7 @@ def asset_create(request):
 
     return render(request, 'libapp/asset-create.html', {'form': form})
 
-#page for asset editing. 
+#page for asset editing.
 #Navigation to asset editing page occurs when user clicks on any one of the assets at the library homepage
 #The editing page for that particular asset shows up as a result
 def asset_edit(request):
@@ -136,7 +137,7 @@ def tag_create(request):
             new_tag = add_tag(tag_name)
             if new_tag == None:
                 return render(request, 'libapp/fail.html', {'error':'Tag already exists'})
-            
+
             if parent_tags.exists():
                 for ptag in parent_tags:
                     link_tags(ptag, new_tag)
@@ -146,7 +147,8 @@ def tag_create(request):
             return HttpResponseRedirect('/library/')
     else:
         form = TagForm()
-    
+
+
     return render(request, 'libapp/tag-create.html', {'form': form})
 
 def tag_link(request):
@@ -163,4 +165,3 @@ def tag_link(request):
         form = LinkForm()
 
     return render(request, 'libapp/tag-link.html', {'form': form})
-

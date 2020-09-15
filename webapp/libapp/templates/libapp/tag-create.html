@@ -1,19 +1,12 @@
+{% extends 'libapp/base.html' %}
+{% load static %}
+{% block content %}
 
-<!DOCTYPE html>
-<html>
-    <head>
+<h1> Create a tag! </h1>
+<form  method="POST" autocomplete="off">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="Submit">
+</form>
 
-            <meta charset="UTF-8">
-            <title>Tag Creation</title>
-        </head>
-    <body>
-        <form  method="POST" autocomplete="off">
-            {% csrf_token %}
-
-             {{ form.as_p }}
-
-            <input type="submit" value="Submit">
-        </form>
-        
-    </body>
-</html>
+{% endblock %}

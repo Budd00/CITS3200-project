@@ -1,19 +1,12 @@
+{% extends 'libapp/base.html' %}
+{% load static %}
+{% block content %}
 
-<!DOCTYPE html>
-<html>
-    <head>
+<h1>Create Asset</h1>
+<form method="POST" autocomplete="off">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="submit">
+</form>
 
-            <meta charset="UTF-8">
-            <title>Asset Creation</title>
-        </head>
-    <body>
-        <form  method="POST" autocomplete="off">
-            {% csrf_token %}
-
-             {{ form.as_p }}
-
-            <input type="submit" value="Submit">
-        </form>
-        
-    </body>
-</html>
+{% endblock %}

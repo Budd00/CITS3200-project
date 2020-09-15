@@ -8,9 +8,13 @@ def index(request):
     query = request.GET.get('q')
     option = request.GET.get('option')
     asset_dict = {}
+    if option == None:
+        option = ''
     context = {
-        'asset_dict':asset_dict
+        'asset_dict':asset_dict,
+        'option' : option
     }
+
 
     #if the 'tag' radio button was selected
     if option == 'tag':
@@ -29,7 +33,7 @@ def index(request):
                 #add each asset into asset_list
                 for asset in asset_list:
                     tags = find_asset_tags(asset)
-                    asset_dict[asset] = tags
+                    asset_dict[asset] = tree(tags, [])
                 return render(request, "libapp/library.html", context)
             #if no related assets found
             else:
@@ -47,26 +51,38 @@ def index(request):
         if asset is not None:
             #find related tags
             tags = find_asset_tags(asset)
-            asset_dict[asset] = tags
+            asset_dict[asset] = tree(tags, [])
             return render(request, "libapp/library.html", context)
         #no such asset found
         else:
             context['error_msg'] = "No assets found"
             return render(request, "libapp/library.html", context)
+    #initial loading of page
     else:
         #retrieves all assets
         asset_list = Asset.objects.all()
+        hierarchy = []
         #populates asset_dict in format {asset_1:[tag_1,tag_2],asset_2:[tag_1,tag_4],asset_3...}
         for asset in asset_list:
             tags = find_asset_tags(asset)
-            asset_dict[asset] = tags
-        context = {
-            'asset_dict':asset_dict
-        }
+            # if tags is not empty
+            asset_dict[asset] = tree(tags, [])
         return render(request, "libapp/library.html", context)
 
 def refresh(request):
     return HttpResponseRedirect('/library/')
+#recursive function for printing out the tag hierarchy
+def tree(tags, hierarchy):
+    if tags:
+        if hierarchy:
+            hierarchy.append("indent")
+        for tag in tags:
+            hierarchy.append(tag)
+            hierarchy = tree(tag.child(), hierarchy)
+            hierarchy.append("dedent")
+        return hierarchy
+    else:
+        return hierarchy
 
 #page for asset creation
 def asset_create(request):
@@ -91,7 +107,7 @@ def asset_create(request):
 
     return render(request, 'libapp/asset-create.html', {'form': form})
 
-#page for asset editing. 
+#page for asset editing.
 #Navigation to asset editing page occurs when user clicks on any one of the assets at the library homepage
 #The editing page for that particular asset shows up as a result
 def asset_edit(request):
@@ -107,7 +123,7 @@ def asset_edit(request):
             asset.save()
             return HttpResponseRedirect('/library/')
     else:
-        tags = find_asset_tags(asset)
+        #tags = find_asset_tags(asset)
         form = AssetForm(instance=asset)
         context['form'] = form
         return render(request, 'libapp/asset-edit.html', context)
@@ -123,7 +139,7 @@ def tag_create(request):
             new_tag = add_tag(tag_name)
             if new_tag == None:
                 return render(request, 'libapp/fail.html', {'error':'Tag already exists'})
-            
+
             if parent_tags.exists():
                 for ptag in parent_tags:
                     link_tags(ptag, new_tag)
@@ -133,7 +149,8 @@ def tag_create(request):
             return HttpResponseRedirect('/library/')
     else:
         form = TagForm()
-    
+
+
     return render(request, 'libapp/tag-create.html', {'form': form})
 
 def tag_link(request):
@@ -150,4 +167,3 @@ def tag_link(request):
         form = LinkForm()
 
     return render(request, 'libapp/tag-link.html', {'form': form})
-

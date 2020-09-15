@@ -1,5 +1,5 @@
 from django import forms
-from .models import Tag, Asset
+from .models import Tag, Asset, AssetEdge
 from django.forms.models import ModelMultipleChoiceField, ModelChoiceField
 from django.forms import ModelForm
 
@@ -27,6 +27,13 @@ class AssetForm(ModelForm):
     class Meta:
         model = Asset
         fields = ['name', 'pub_notes', 'priv_notes']
+
+    tags = MyModelMultipleChoiceField(
+        queryset=Tag.objects.all(),
+        widget = forms.CheckboxSelectMultiple
+    )
+
+
 
 
 class TagForm(forms.Form):

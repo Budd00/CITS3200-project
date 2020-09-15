@@ -36,3 +36,7 @@ table, th, td {
 td {
     padding: 10px;
 }
+
+.child_tags {
+    padding-left:1em;
+}

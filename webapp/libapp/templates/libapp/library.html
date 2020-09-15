@@ -1,6 +1,7 @@
 
-
+{% extends 'libapp/base.html' %}
 {% load static %}
+{% block content %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'libapp/library.css'%}">
 
@@ -17,20 +18,29 @@
         <a href="asset-create/">Create asset</a><br>
         <a href="tag-create/">Create tag</a><br>
         <a href="tag-link/">Link tags</a><br>
+        <div>
+            Search for a game via name or tag!
+          </div>
         <div class="search_bar" id="search-bar">
-        
+   
             <form method="GET" autocomplete="off">
-                <input type="radio" id="asset" name="option" value="asset" checked="checked">
+                {% if option == "" %}
+                    <input type="radio" id="asset" name="option" value="asset" checked="checked">
+                {% elif option == "asset" %}
+                    <input type="radio" id="asset" name="option" value="asset" checked="checked">
+                {% else %}
+                    <input type="radio" id="asset" name="option" value="asset">
+                {% endif %}
                 <label for="asset">Asset</label>
-                <input type="radio" id="tag" name="option" value="tag">
+                {% if option == "tag" %}
+                    <input type="radio" id="tag" name="option" value="tag" checked="checked">
+                {% else %}
+                    <input type="radio" id="tag" name="option" value="tag">
+                {% endif %}
                 <label for="tag">Tag</label>
                 <p></p>
                 <input name="q" type="text" placeholder="Search.." id="input">
             </form>
-            <div class="suggestion">
-
-
-            </div>
         </div>
         {% if asset_dict %}
             <table>
@@ -40,12 +50,19 @@
                     <th>Public Notes</th>
                     <th>Private Notes</th>
                 </tr>
-                {% for asset, tags in asset_dict.items %}
+                {% for asset, hierarchy in asset_dict.items %}
                 <tr>
                     <td><a href='asset-edit/?asset={{ asset.name }}'>{{ asset.name }}</a></td>
                     <td>
-                    {% for tag in tags %}
-                        {{ forloop.counter }}) {{ tag.name }}<br>
+                    {% for item in hierarchy %}
+                        {% if item == "indent" %}
+                            <div class="child_tags">
+                            <span style='font-size:15px;'>&#8627;</span>
+                        {% elif item == "dedent" %}
+                            </div>
+                        {% else %}
+                            {{ item.name }}<br>
+                        {% endif %}
                     {% endfor %}
                     </td>
                     <td>
@@ -62,3 +79,4 @@
         {% endif %}
     </body>
 </html>
+{% endblock %}

@@ -1,7 +1,7 @@
 from .forms import AssetItem,AssetForm, TagForm, LinkForm
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import check_asset, check_tag, find_assets_direct, check_tag_alternates, add_asset, add_tag, link_asset, link_tags, Asset, find_asset_tags
+from .models import check_asset, check_tag, find_assets, check_tag_alternates, add_asset, add_tag, link_asset, link_tags, Asset, find_asset_tags
 
 # library database page
 def index(request):
@@ -27,7 +27,7 @@ def index(request):
         #if tag is found, find related assets
         if tag is not None:
 
-            asset_list = find_assets_direct(tag)
+            asset_list = find_assets(tag)
             #if related assets found
             if asset_list != []:
                 #add each asset into asset_list
@@ -121,7 +121,7 @@ def asset_edit(request):
             asset.save()
             return HttpResponseRedirect('/library/')
     else:
-        tags = find_asset_tags(asset)
+        #tags = find_asset_tags(asset)
         form = AssetForm(instance=asset)
         context['form'] = form
         return render(request, 'libapp/asset-edit.html', context)

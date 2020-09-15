@@ -1,7 +1,7 @@
 from .forms import AssetItem,AssetForm, TagForm, LinkForm
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import check_asset, check_tag, find_assets, check_tag_alternates, add_asset, add_tag, link_asset, link_tags, Asset, find_asset_tags
+from .models import check_asset, check_tag, find_assets, check_tag_alternates, add_asset, add_tag, link_asset, link_tags, Asset, find_asset_tags, find_asset_tags_direct
 
 # library database page
 def index(request):
@@ -32,7 +32,7 @@ def index(request):
             if asset_list != []:
                 #add each asset into asset_list
                 for asset in asset_list:
-                    tags = find_asset_tags(asset)
+                    tags = find_asset_tags_direct(asset)
                     asset_dict[asset] = tree(tags, [])
                 return render(request, "libapp/library.html", context)
             #if no related assets found
@@ -50,7 +50,7 @@ def index(request):
         #asset found
         if asset is not None:
             #find related tags
-            tags = find_asset_tags(asset)
+            tags = find_asset_tags_direct(asset)
             asset_dict[asset] = tree(tags, [])
             return render(request, "libapp/library.html", context)
         #no such asset found
@@ -64,7 +64,7 @@ def index(request):
         hierarchy = []
         #populates asset_dict in format {asset_1:[tag_1,tag_2],asset_2:[tag_1,tag_4],asset_3...}
         for asset in asset_list:
-            tags = find_asset_tags(asset)
+            tags = find_asset_tags_direct(asset)
             # if tags is not empty
             asset_dict[asset] = tree(tags, [])
         return render(request, "libapp/library.html", context)

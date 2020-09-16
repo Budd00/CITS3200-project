@@ -56,10 +56,11 @@
                     {% for item in hierarchy %}
                         {% if item == "indent" %}
                             <div class="child_tags">
-                            <span style='font-size:15px;'>&#8627;</span>
+                            
                         {% elif item == "dedent" %}
                             </div>
                         {% else %}
+                        <span style='font-size:15px;'>&#8627;</span>
                             {{ item.name }}<br>
                         {% endif %}
                     {% endfor %}

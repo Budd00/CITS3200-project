@@ -87,7 +87,7 @@ def tree(tags, hierarchy):
         for tag in tags:
             hierarchy.append(tag)
             hierarchy = tree(tag.child(), hierarchy)
-            hierarchy.append("dedent")
+        hierarchy.append("dedent")
         return hierarchy
     else:
         return hierarchy

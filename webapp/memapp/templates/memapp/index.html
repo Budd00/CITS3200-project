@@ -1,0 +1,23 @@
+{% extends base.html %}
+{% block content %}
+
+  <h1>Membership details home</h1>
+  {% if members %}
+      <table style="margin-left:auto; margin-right: auto; border: 1px solid black">
+          <tr>
+              <td style="border-bottom-style: solid"> <b> Member Info </b> </td>
+              <td style="border-bottom-style: solid"> <b> Member Details </b> </td>
+          </tr>
+      {% for mem in members %}
+
+          <tr>
+              <td style="border:thin;"><a href=" {% url 'get_info' mem.id %}"> {{mem.member_name}}</a></td>
+              <td style="border:thin;"><a href="{% url 'get_detail' mem.id %}"> {{mem.member_name}}'s detail</a></td>
+          </tr>
+      {% endfor %}
+      </table>
+  {% else %}
+      <p> No result. </p>
+  {% endif %}
+
+{% endblock %}

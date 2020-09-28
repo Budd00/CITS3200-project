@@ -1,12 +1,84 @@
 {% extends 'libapp/base.html' %}
 {% load static %}
+{% load tag_link_extras %}
 {% block content %}
 
-<h1> Link a tag! </h1>
-<form  method="POST" autocomplete="off">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <input type="submit" value="Submit">
-</form>
+<link rel="stylesheet" type="text/css" href="{% static 'libapp/tag-link.css'%}">
 
+<h1> Link a tag! </h1>
+    <p></p>
+    {% for tag in tags %}
+        {% if not tag.parent %} <!--If no parents -->   
+            {% if tag.build_hierarchy %}
+                {% for child_tag in tag.build_hierarchy %}
+                    {% if child_tag == "indent" %}
+                        <div class="child_tags">
+                    {% elif child_tag == "dedent" %}
+                        </div>
+                    {% elif forloop.counter0 == 0 %}
+                        <div class="root_tag" value='{{ child_tag.id }}'>
+                        <table>
+                            <th>
+                                <b>{{ child_tag.name }}</b>
+                            </th>
+                            <th>
+                                <form method="POST" action="tag-add-child/">
+                                    {% csrf_token %}
+                                    <select name="child_tag" onchange="this.form.submit()">
+                                        <option selected>--- Add child ---</option>
+                                        {% for tag_inner in tags %}
+                                            {% if tag_inner not in tag.build_hierarchy %}
+                                            <option value="{{ tag_inner.id }}">{{ tag_inner.name }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                    <input name='current_tag' type='text' value="{{ child_tag.id }}" style="display:none">
+                                </form>
+                            </th>
+                        </table>
+                        <p></p>
+                    {% else %}
+                        <div class='tag' value='{{ child_tag.id }}'>
+                        <table>
+                            <th>
+                                <span style='font-size:15px;'>&#8627;</span>
+                                {{ child_tag.name }}
+                            </th>
+                            <th>
+                                <form method="POST" action="tag-unlink/" onsubmit="find_parent(this)">
+                                    {% csrf_token %}
+                                    <input type="submit" value="Unlink Parent">
+                                    <input name='parent_tag' type='text' style="display:none">
+                                    <input name='current_tag' type='text' value='{{ child_tag.id }}' style="display:none">
+                                </form>
+                            </th>  
+                            <th> 
+                                <form method="POST" action="tag-add-child/">
+                                    {% csrf_token %}
+                                    <select name="child_tag" onchange="this.form.submit()">
+                                        <option selected>--- Add child ---</option>
+                                        {% for tag in tags %}
+                                            {% if object not in tag.build_hierarchy %}
+                                            <option value="{{ tag.id }}">{{ tag.name }}</option>       
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                    <input name='current_tag' type='text' value="{{ child_tag.id }}" style="display:none">
+                                </form>
+                            </th>
+                        </table>
+                        {% with next_element=tag.build_hierarchy|next:forloop.counter0 %}
+                        {% if next_element != "indent" %}
+                            </div>
+                        {% endif %}
+                        {% endwith %}
+                        <p></p>
+                    
+                    {% endif %}
+                {% endfor %}
+                </div>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+    <script src="{% static 'libapp/tag-link.js' %}"></script>
 {% endblock %}

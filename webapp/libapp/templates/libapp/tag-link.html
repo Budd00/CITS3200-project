@@ -79,6 +79,10 @@
                 </div>
             {% endif %}
         {% endif %}
+        {% for tag in tags %}
+            </div>
+        {% endfor %}
     {% endfor %}
+
     <script src="{% static 'libapp/tag-link.js' %}"></script>
 {% endblock %}

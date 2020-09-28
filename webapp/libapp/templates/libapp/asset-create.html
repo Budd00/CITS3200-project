@@ -2,10 +2,56 @@
 {% load static %}
 {% block content %}
 
+<link rel="stylesheet" type="text/css" href="{% static 'libapp/asset-create.css'%}">
+
 <h1>Create Asset</h1>
 <form method="POST" autocomplete="off">
   {% csrf_token %}
-  {{ form.as_p }}
+  
+  {{form.name.label }}: {{ form.name }}<p></p>
+  {{form.pub_notes.label }}: {{ form.pub_notes }}<p></p>
+  {{form.priv_notes.label }}: {{ form.priv_notes }}<p></p>
+
+
+    {% for value, label, tag in form.tags.field.choices %}
+        {% if not tag.parent %} <!--If no parents -->
+            {% if tag.build_hierarchy %}
+                {% for child_tag in tag.build_hierarchy %}
+                    {% if child_tag == "indent" %}
+                        <div class="child_tags">
+                        
+                    {% elif child_tag == "dedent" %}
+                        </div>
+                    {% elif forloop.counter0 == 0 %}
+                        <input type="checkbox" value="{{ child_tag.id }}" name="tags">
+                        {{ child_tag.name }}<br>
+
+                    {% else %}
+                        <span style='font-size:15px;'>&#8627;</span>
+                        <input type="checkbox" value="{{ child_tag.id }}" name="tags">
+                            {{ child_tag.name }}<br>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% endif %}
+        
+        <br>
+    {% endfor %}
+    {% if form.errors %}
+    {% for field in form %}
+        {% for error in field.errors %}
+            <div class="alert alert-danger">
+                <strong>{{ error|escape }}</strong>
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+    {% endfor %}
+{% endif %}
+
   <input type="submit" value="submit">
 </form>
 

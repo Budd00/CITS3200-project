@@ -1,0 +1,12 @@
+.child_tags {
+    padding-left:1em;
+}
+
+form {
+    display: inline;
+}
+
+.tag-selections {
+    display: flex;
+    flex-flow: row;
+}

@@ -1,7 +1,8 @@
-from .forms import AssetItem,AssetForm, TagForm, LinkForm
+from .forms import AssetForm, TagForm
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import check_asset, check_tag, find_assets, check_tag_alternates, add_asset, add_tag, link_asset, link_tags, Asset, find_asset_tags, find_asset_tags_direct, remove_asset_edge
+from .models import *
+#Tag, check_asset, check_tag, find_assets, check_tag_alternates, add_asset, add_tag, link_asset, link_tags, Asset, find_asset_tags, find_asset_tags_direct, remove_asset_edge, check_tag_id
 
 # library database page
 def index(request):
@@ -152,7 +153,9 @@ def asset_edit(request):
     else:
         #tags = find_asset_tags(asset)
         form = AssetForm(instance=asset)
+        asset_tags = find_asset_tags_direct(asset)
         context['form'] = form
+        context['asset_tags'] = asset_tags
         return render(request, 'libapp/asset-edit.html', context)
 
 #page for tag creation
@@ -180,17 +183,24 @@ def tag_create(request):
 
     return render(request, 'libapp/tag-create.html', {'form': form})
 
+#page for tag linking
 def tag_link(request):
-    if request.method == 'POST':
-        form = LinkForm(request.POST)
-        if form.is_valid():
-            parent_tag = form.cleaned_data['parent_tag']
-            child_tag = form.cleaned_data['child_tag']
-            new_edge = link_tags(parent_tag, child_tag)
-            if new_edge == None:
-                return render(request, 'libapp/fail.html', {'error':'Link already exists'})
-            return HttpResponseRedirect('/library/')
-    else:
-        form = LinkForm()
+    tags = Tag.objects.all()
+    return render(request, 'libapp/tag-link.html', {'tags':tags})
 
-    return render(request, 'libapp/tag-link.html', {'form': form})
+#function for unlinking the currently selected tag from the selected parent
+def tag_unlink(request):
+    parent_tag = check_tag_id(request.POST.get('parent_tag'))
+    current_tag = check_tag_id(request.POST.get('current_tag'))
+    remove_edge(parent_tag, current_tag)
+    #print("Parent tag: ", parent_tag, "\nCurrent Tag: ", current_tag)
+    return HttpResponseRedirect('/library/tag-link')
+
+#function for adding a new child tag to the currently selected tag
+def tag_add_child(request):
+    child_tag = check_tag_id(request.POST.get('child_tag'))
+    current_tag = check_tag_id(request.POST.get('current_tag'))
+    #print("CHILD TAG SELECTED: ", child_tag)
+    #print("Current tag: ", current_tag)
+    link_tags(current_tag, child_tag)
+    return HttpResponseRedirect('/library/tag-link')

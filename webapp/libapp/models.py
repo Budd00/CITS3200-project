@@ -26,6 +26,12 @@ class Tag(models.Model):
     def child(self):
         return find_child_tags(self)
 
+    def parent(self):
+        return find_parent_tags(self)
+
+    def build_hierarchy(self):
+        return tree([self], [])
+
 class Asset(models.Model):
     
     #primary key
@@ -152,6 +158,14 @@ def link_asset(asset, tag, implied):
 #checks if the given tag exists
 def check_tag(tag_name):
     tag_query = Tag.objects.filter(name__iexact=tag_name)
+    #returns the tag if exists
+    if tag_query.exists():
+        return tag_query[0]
+    else:
+        return None
+
+def check_tag_id(tag_id):
+    tag_query = Tag.objects.filter(id__exact=tag_id)
     #returns the tag if exists
     if tag_query.exists():
         return tag_query[0]
@@ -429,7 +443,7 @@ def detach_tag(asset):
 #removes an edge between a given parent and child tag
 def remove_edge(parent, child):
     #find the edge with the given parent and child tag
-    to_remove = Edge.objects.filter(parent_tag__exact = parent.id).filter(child_tag__exact = child.tag)[0]
+    to_remove = Edge.objects.filter(parent_tag__exact = parent.id).filter(child_tag__exact = child.id)[0]
     #check that the edge exists
     if to_remove != None:
         #remove the edge
@@ -449,8 +463,17 @@ def remove_asset_edge(asset, tag):
         #remove any asset links implied because of this edge
         detach_tag(asset)
     return
-        
 
-
-
+#recursive function for printing out the tag hierarchy
+def tree(tags, hierarchy):
+    if tags:
+        if hierarchy:
+            hierarchy.append("indent")
+        for tag in tags:
+            hierarchy.append(tag)
+            hierarchy = tree(tag.child(), hierarchy)
+        hierarchy.append("dedent")
+        return hierarchy
+    else:
+        return hierarchy
 

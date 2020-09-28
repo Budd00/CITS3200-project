@@ -1,27 +1,20 @@
 from django import forms
 from .models import Tag, Asset, AssetEdge
-from django.forms.models import ModelMultipleChoiceField, ModelChoiceField
-from django.forms import ModelForm
+from django.forms.models import ModelMultipleChoiceField, ModelChoiceField, ModelChoiceIterator
+from django.forms import ModelForm, MultipleChoiceField, ChoiceField
 
 class MyModelMultipleChoiceField(ModelMultipleChoiceField):
-    def label_from_instance(self, obj):
-        return "%s" % (obj.name)
+    def _get_choices(self):
+        if hasattr(self, '_choices'):
+            return self._choices
+        return CustomModelChoiceIterator(self)
 
-class MyModelChoiceField(ModelChoiceField):
-    def label_from_instance(self, obj):
-        return "%s" % (obj.name)
+    choices = property(_get_choices, MultipleChoiceField._set_choices)
 
-class AssetItem(forms.Form):
-    name = forms.CharField(
-        max_length=100
-    )
-    public_notes = forms.CharField(widget=forms.Textarea, required = False)
-    private_notes = forms.CharField(widget=forms.Textarea, required = False)
-    tags = MyModelMultipleChoiceField(
-        queryset = Tag.objects.all(),
-        widget = forms.CheckboxSelectMultiple,
-        required = False
-    )
+
+class CustomModelChoiceIterator(ModelChoiceIterator):
+    def choice(self, obj):
+        return (self.field.prepare_value(obj), self.field.label_from_instance(obj), obj)
 
 class AssetForm(ModelForm):
     class Meta:
@@ -33,9 +26,6 @@ class AssetForm(ModelForm):
         widget = forms.CheckboxSelectMultiple,
         required = False
     )
-
-
-
 
 class TagForm(forms.Form):
     name = forms.CharField(max_length=100)
@@ -51,16 +41,4 @@ class TagForm(forms.Form):
         queryset = Tag.objects.all(),
         widget = forms.CheckboxSelectMultiple,
         required = False
-    )
-
-class LinkForm(forms.Form):
-    parent_tag = MyModelChoiceField(
-        queryset = Tag.objects.all(),
-        widget = forms.Select,
-        required = True
-    )
-    child_tag = MyModelChoiceField(
-        queryset = Tag.objects.all(),
-        widget = forms.Select,
-        required = True
     )

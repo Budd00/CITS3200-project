@@ -15,9 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+import os, django
 
 urlpatterns = [
     path('library/', include('libapp.urls')),
     path('member/', include('memapp.urls')),
     path('admin/', admin.site.urls),
+    path('accounts/', include('django.contrib.auth.urls')),
+
 ]
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "UserAdmin.settings")
+django.setup()

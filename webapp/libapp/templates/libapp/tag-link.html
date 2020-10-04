@@ -6,6 +6,7 @@
 <link rel="stylesheet" type="text/css" href="{% static 'libapp/tag-link.css'%}">
 
 <h1> Link a tag! </h1>
+
     <p></p>
     {% for tag in tags %}
         {% if not tag.parent %} <!--If no parents -->   
@@ -19,8 +20,11 @@
                         <div class="root_tag" value='{{ child_tag.id }}'>
                         <table>
                             <th>
-                                <b>{{ child_tag.name }}</b>
-                            </th>
+                                {% for name, url in urls.items %}
+                                    {% if name == child_tag.name %}
+                                        <b><a href='tag-edit/?tag={{ url }}'>{{ child_tag.name }}</a></b>
+                                    {% endif %}
+                                {% endfor %}
                             <th>
                                 <form method="POST" action="tag-add-child/">
                                     {% csrf_token %}
@@ -42,7 +46,12 @@
                         <table>
                             <th>
                                 <span style='font-size:15px;'>&#8627;</span>
-                                {{ child_tag.name }}
+                                {% for name, url in urls.items %}
+                                    {% if name == child_tag.name %}
+                                        <b><a href='tag-edit/?tag={{ url }}'>{{ child_tag.name }}</a></b>
+                                    {% endif %}
+                                {% endfor %}
+                            </th>
                             </th>
                             <th>
                                 <form method="POST" action="tag-unlink/" onsubmit="find_parent(this)">

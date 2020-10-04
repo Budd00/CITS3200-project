@@ -129,10 +129,6 @@ def link_tags(parent, child):
 def link_asset(asset, tag, implied):
     thisAsset = asset
     thisTag = tag
-    print("linking")
-    print(thisAsset.name)
-    print(thisAsset.id)
-    print(thisTag.name)
     #check that there isn't already a link
     #find all edges to the asset
     existingEdges = AssetEdge.objects.filter(asset_id__exact = asset.id)
@@ -144,9 +140,7 @@ def link_asset(asset, tag, implied):
             print(edge.asset_id)
             exists = True
     if not exists:
-        print("creating")
         newEdge = AssetEdge.objects.create(asset_id = thisAsset, tag_id = thisTag, implied=implied)
-        print(newEdge.asset_id)
         #AssetEdge.objects.create(asset_id = thisAsset, tag_id = thisTag, implied=implied)
         #only check if this is a direct edge
         if implied == 0:
@@ -215,6 +209,39 @@ def find_assets(tag, found=[]):
             assets.append(this_asset)
     #return the assets list
     return assets
+
+#given a list of assets, renmove any assets that cant reach the given tag
+def refine_asset_search(assets, tag):
+    refined_assets = []
+    #loop over the current asset list
+    for asset in assets:
+        #check if it links to the given tag
+        link = AssetEdge.objects.filter(asset_id__exact=asset.id).filter(tag_id__exact=tag.id)
+        #if there is an existing link, add the asset tot he refined search
+        if len(link) > 0:
+            refined_assets.append(asset)
+    return refined_assets
+
+#given a list of assets, add any assets not already included if they link to the given tag
+def broaden_asset_search(assets, tag):
+    broadened_assets = []
+    #run a search for any assets linked to the given tag, ignoring any assets that are already in the given list
+    found_assets = find_assets(tag, assets)
+    #combine the two lists
+    broadened_assets = assets + found_assets
+    return broadened_assets
+
+#remove any assets from the search that link to the given tag
+def exclude_from_search(assets, tag):
+    refined_assets = []
+    #loop over the current asset list
+    for asset in assets:
+        #check if the asset links to the given tag
+        link = AssetEdge.objects.filter(asset_id__exact=asset.id).filter(tag_id__exact=tag.id)
+
+        if len(link) == 0:
+            refined_assets.append(asset)
+    return refined_assets
 
 #returns a list of tags with direct links to this asset, ignoring any tags in the ignore list
 def find_asset_tags_direct(asset, ignore=[]):
@@ -344,13 +371,18 @@ def find_alternate_name(tag):
 
 #checks if the given name is an alternate name. If so, returns the tag id
 def check_tag_alternates(name):
-    alternate_name_query = AlternateName.objects.filter(name__exact = name)
+    alternate_name_query = AlternateName.objects.filter(name__iexact = name)
     if alternate_name_query.exists():
         return alternate_name_query[0].tag_id
     else:
         return None
 
     #return assets
+
+#adds the given string as an alternate name for the given tag
+def add_alternate_name(tag, name):
+    new_alt = AlternateName.objects.create(tag_id = tag, name = name)
+    return tag
 
 #finds all assets linked to a parent tag in an edge and links them to all the child tags of that edge
 def implied_assets_new(edge):

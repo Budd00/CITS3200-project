@@ -1,0 +1,44 @@
+{% extends 'libapp/base.html' %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'libapp/tag-create.css'%}">
+<link rel="stylesheet" type="text/css" href="{% static 'libapp/tag-edit.css'%}">
+
+<h1> Edit the {{ tag.name }} tag! </h1>
+<form  method="POST" autocomplete="off">
+    {% csrf_token %}
+    {{form.name.label }}: {{ form.name }}<p></p>
+    <br>
+    {{ form.new_alts.label }}<p></p>
+    {{ form.new_alts }}<p></p>
+    <br>
+  <input type="submit" value="Submit">
+</form>
+<br>
+<br>
+{% if altlen > 0 %}
+    <table>
+        <tr>
+            <th>Alternate Name</th>
+            <th>Delete</th>
+        </tr>
+        {% for alt_name in alts %}
+        <tr>
+            <td>
+                {{ alt_name.name }}
+            </td>
+            <td>
+                <form action='delete/' method="GET" autocomplete="off">
+                    {% csrf_token %}
+                    <input type="submit" value="Delete">
+                    <input name='alt' type='text' value='{{ alt_name.name }}' style="display:none">
+                </form>
+            </td>
+
+        </tr>
+        {% endfor %}
+    </table>
+{% endif %}
+
+{% endblock %}

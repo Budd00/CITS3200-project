@@ -8,6 +8,10 @@
 <form  method="POST" autocomplete="off">
     {% csrf_token %}
     {{form.name.label }}: {{ form.name }}<p></p>
+    <br>
+    {{ form.alt_names.label }}<p></p>
+    {{ form.alt_names }}<p></p>
+    <br>
     {{ form.parent_tags.label}}<br>
     {% for value, label, tag in form.parent_tags.field.choices %}
         {% if not tag.parent %} <!--If no parents -->

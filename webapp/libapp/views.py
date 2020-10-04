@@ -1,7 +1,8 @@
-from .forms import AssetForm, TagForm
+from .forms import *
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import *
+import urllib.parse
 #Tag, check_asset, check_tag, find_assets, check_tag_alternates, add_asset, add_tag, link_asset, link_tags, Asset, find_asset_tags, find_asset_tags_direct, remove_asset_edge, check_tag_id
 
 # library database page
@@ -20,30 +21,53 @@ def index(request):
 
     #if the 'tag' radio button was selected
     if option == 'tag':
-        #checks if tag exists
-        tag = check_tag(query)
-        #if tag not found, check if tag is an alternate name
-        if tag is None:
-            tag = check_tag_alternates(query)
+        #split lst into seperate queries
+        qList = query.split(", ")
+        asset_list = []
 
-        #if tag is found, find related assets
-        if tag is not None:
-
-            asset_list = find_assets(tag)
-            #if related assets found
-            if asset_list != []:
-                #add each asset into asset_list
-                for asset in asset_list:
-                    tags = find_asset_tags_direct(asset)
-                    asset_dict[asset] = tree(tags, [])
-                return render(request, "libapp/library.html", context)
-            #if no related assets found
+        for reqTag in qList:
+            #set search type to default (broaden search)
+            search_type = 0
+            #check if the query includes any specific search modifiers
+            if reqTag[:1] == "|":
+                #set search type to 1 (refine search)
+                search_type = 1
+                #remove the search type modifier
+                reqTag = reqTag[2:]
+            elif reqTag[:1] == "!":
+                #det search type to 2 (exclude search)
+                search_type = 2
+                #remove the search type modifier
+                reqTag = reqTag[2:]
+            
+            #checks if tag exists
+            tag = check_tag(reqTag)
+            #if tag not found, check if tag is an alternate name
+            if tag is None:
+                tag = check_tag_alternates(reqTag)
+             #if tag is found, find related assets
+            if tag is not None:
+                #run the search based on what search type was set
+                if search_type == 0:
+                    asset_list = broaden_asset_search(asset_list, tag)
+                elif search_type == 1:
+                    asset_list = refine_asset_search(asset_list, tag)
+                elif search_type == 2:
+                    asset_list = exclude_from_search(asset_list, tag)
+            #logic goes here if tag not found
             else:
-                context['error_msg'] = "Tag found but not tied to any assets"
+                context['error_msg'] = "Tag not found"
                 return render(request, "libapp/library.html", context)
-        #logic goes here if tag not found
+        #if related assets found
+        if asset_list != []:
+            #add each asset into asset_list
+            for asset in asset_list:
+                tags = find_asset_tags_direct(asset)
+                asset_dict[asset] = tree(tags, [])
+            return render(request, "libapp/library.html", context)
+        #if no related assets found
         else:
-            context['error_msg'] = "Tag not found"
+            context['error_msg'] = "Tag found but not tied to any assets"
             return render(request, "libapp/library.html", context)
 
     #if the 'asset' radio button was selected
@@ -78,6 +102,15 @@ def asset_delete(request):
     for tag in tags:
         remove_asset_edge(asset, tag)
     asset.delete()
+    return HttpResponseRedirect('/library/')
+
+#remove an alternate name    
+def alt_delete(request):
+    alt_name = request.GET.get('alt')
+    tag = check_tag_alternates(alt_name)
+    if tag is not None:
+        alt = AlternateName.objects.filter(name__iexact=alt_name)
+        alt.delete()
     return HttpResponseRedirect('/library/')
 
 #recursive function for printing out the tag hierarchy
@@ -158,17 +191,55 @@ def asset_edit(request):
         context['asset_tags'] = asset_tags
         return render(request, 'libapp/asset-edit.html', context)
 
+#page for tag editing.
+#Navigation to tag editing page occurs when user clicks on any one of the tags in the tag linking page
+#The editing page for that particular tag shows up as a result
+def tag_edit(request):
+    tag_name = request.GET.get('tag')
+    print(tag_name)
+    tag = check_tag(tag_name)
+    context = {}
+    if request.method == 'POST':
+        form = TagEditForm(request.POST)
+        if form.is_valid():
+            
+            tag.name = form.cleaned_data['name']
+            alt_names = form.cleaned_data['new_alts']
+            alternate_names = alt_names.split(", ")
+            for name in alternate_names:
+                add_alternate_name(tag, name)
+
+            tag.save()
+
+            return HttpResponseRedirect('/library/')
+    else:
+        form = TagEditForm()
+        current_alts = find_alternate_name(tag)
+        context['alts'] = current_alts
+        if current_alts is not None:
+            context['altlen'] = len(current_alts)
+        else:
+            context['altlen'] = 0
+        context['tag'] = tag
+        context['form'] = form
+        return render(request, 'libapp/tag-edit.html', context)
+
 #page for tag creation
 def tag_create(request):
     if request.method == 'POST':
         form = TagForm(request.POST)
         if form.is_valid():
             tag_name = form.cleaned_data['name']
+            alt_names = form.cleaned_data['alt_names']
+            alternate_names = alt_names.split(", ")
             parent_tags = form.cleaned_data['parent_tags']
             child_tags = form.cleaned_data['child_tags']
             new_tag = add_tag(tag_name)
             if new_tag == None:
                 return render(request, 'libapp/fail.html', {'error':'Tag already exists'})
+            
+            for name in alternate_names:
+                add_alternate_name(new_tag, name)
 
             if parent_tags.exists():
                 for ptag in parent_tags:
@@ -176,6 +247,7 @@ def tag_create(request):
             if child_tags.exists():
                 for ctag in child_tags:
                     link_tags(new_tag, ctag)
+            
             return HttpResponseRedirect('/library/')
     else:
         form = TagForm()
@@ -186,7 +258,12 @@ def tag_create(request):
 #page for tag linking
 def tag_link(request):
     tags = Tag.objects.all()
-    return render(request, 'libapp/tag-link.html', {'tags':tags})
+    tag_urls = {}
+    for tag in tags:
+        url_name = urllib.parse.quote(tag.name)
+        tag_urls[tag.name] = url_name
+        print(tag_urls[tag.name])
+    return render(request, 'libapp/tag-link.html', {'tags':tags, 'urls':tag_urls})
 
 #function for unlinking the currently selected tag from the selected parent
 def tag_unlink(request):

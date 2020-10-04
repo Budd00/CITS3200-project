@@ -1,5 +1,5 @@
 from django import forms
-from .models import Tag, Asset, AssetEdge
+from .models import Tag, Asset, AssetEdge, AlternateName
 from django.forms.models import ModelMultipleChoiceField, ModelChoiceField, ModelChoiceIterator
 from django.forms import ModelForm, MultipleChoiceField, ChoiceField
 
@@ -29,6 +29,7 @@ class AssetForm(ModelForm):
 
 class TagForm(forms.Form):
     name = forms.CharField(max_length=100)
+    alt_names = forms.CharField(required = False, max_length=200, label = "Provide any alternate names for this tag. Seperate each name with a comma and a space.")
 
 
     parent_tags = MyModelMultipleChoiceField(
@@ -42,3 +43,7 @@ class TagForm(forms.Form):
         widget = forms.CheckboxSelectMultiple,
         required = False
     )
+
+class TagEditForm(forms.Form):
+    name = forms.CharField(max_length=100)
+    new_alts = forms.CharField(required = False, max_length=200, label = "Provide any alternate names for this tag. Seperate each name with a comma and a space.")

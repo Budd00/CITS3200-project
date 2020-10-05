@@ -13,5 +13,5 @@ urlpatterns = [
     path('tag-link/tag-add-child/', views.tag_add_child, name='tag-add-child'),
     path('tag-link/tag-edit/', views.tag_edit, name='tag_edit'),
     path('asset-delete/',views.asset_delete, name='asset_delete'),
-    path('alt-delete/',views.alt_delete, name='alt_delete')
+    path('tag-link/tag-edit/alt-delete/',views.alt_delete, name='alt_delete')
 ]

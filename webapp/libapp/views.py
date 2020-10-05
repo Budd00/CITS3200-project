@@ -203,15 +203,19 @@ def tag_edit(request):
         form = TagEditForm(request.POST)
         if form.is_valid():
             
-            tag.name = form.cleaned_data['name']
+            new_name = form.cleaned_data['name']
+            if new_name != "" and new_name != " ":
+                tag.name = new_name
             alt_names = form.cleaned_data['new_alts']
-            alternate_names = alt_names.split(", ")
-            for name in alternate_names:
-                add_alternate_name(tag, name)
+            
+            if alt_names != "" and alt_names != " ":
+                alternate_names = alt_names.split(", ")
+                for name in alternate_names:
+                    add_alternate_name(tag, name)
 
             tag.save()
 
-            return HttpResponseRedirect('/library/')
+            return HttpResponseRedirect('/library/tag-link/')
     else:
         form = TagEditForm()
         current_alts = find_alternate_name(tag)

@@ -45,5 +45,5 @@ class TagForm(forms.Form):
     )
 
 class TagEditForm(forms.Form):
-    name = forms.CharField(max_length=100)
+    name = forms.CharField(required = False, max_length=100)
     new_alts = forms.CharField(required = False, max_length=200, label = "Provide any alternate names for this tag. Seperate each name with a comma and a space.")

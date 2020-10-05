@@ -29,7 +29,7 @@
                 {{ alt_name.name }}
             </td>
             <td>
-                <form action='delete/' method="GET" autocomplete="off">
+                <form action='alt-delete/' method="GET" autocomplete="off">
                     {% csrf_token %}
                     <input type="submit" value="Delete">
                     <input name='alt' type='text' value='{{ alt_name.name }}' style="display:none">

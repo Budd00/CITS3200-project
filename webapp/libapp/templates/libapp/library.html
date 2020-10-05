@@ -72,7 +72,7 @@
                         {{ asset.priv_notes }}
                     </td>
                     <td>
-                        <form action='delete/' method="GET" autocomplete="off">
+                        <form action='asset-delete/' method="GET" autocomplete="off">
                             {% csrf_token %}
                             <input type="submit" value="Delete">
                             <input name='asset' type='text' value='{{ asset.name }}' style="display:none">

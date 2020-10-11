@@ -26,6 +26,9 @@ class Tag(models.Model):
     def child(self):
         return find_child_tags(self)
 
+    def implied_children(self):
+        return reachable_child(self)
+
     def parent(self):
         return find_parent_tags(self)
 
@@ -121,6 +124,8 @@ def link_tags(parent, child):
         #if it doesn't exist, create a new edge
         newEdge = Edge.objects.create(parent_tag = parent, child_tag = child)
         #check for any new implied links between assets and tags
+        if check_tag_cycle(child, child) == True:
+            return
         implied_assets_new(newEdge)
         return newEdge
     return None
@@ -386,7 +391,6 @@ def add_alternate_name(tag, name):
 
 #finds all assets linked to a parent tag in an edge and links them to all the child tags of that edge
 def implied_assets_new(edge):
-    print("heya")
     #find the parent tag linked to the edge
     this_parent = Tag.objects.filter(id__exact = edge.parent_tag.id)[0]
     #find the child tag linked to the edge
@@ -508,4 +512,3 @@ def tree(tags, hierarchy):
         return hierarchy
     else:
         return hierarchy
-

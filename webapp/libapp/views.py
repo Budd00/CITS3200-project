@@ -125,6 +125,7 @@ def tree(tags, hierarchy):
         return hierarchy
     else:
         return hierarchy
+
 def refresh(request):
     return HttpResponseRedirect('/library/')
 
@@ -196,7 +197,6 @@ def asset_edit(request):
 #The editing page for that particular tag shows up as a result
 def tag_edit(request):
     tag_name = request.GET.get('tag')
-    print(tag_name)
     tag = check_tag(tag_name)
     context = {}
     if request.method == 'POST':
@@ -237,7 +237,6 @@ def tag_create(request):
             alt_names = form.cleaned_data['alt_names']
             alternate_names = alt_names.split(", ")
             parent_tags = form.cleaned_data['parent_tags']
-            child_tags = form.cleaned_data['child_tags']
             new_tag = add_tag(tag_name)
             if new_tag == None:
                 return render(request, 'libapp/fail.html', {'error':'Tag already exists'})
@@ -248,11 +247,9 @@ def tag_create(request):
             if parent_tags.exists():
                 for ptag in parent_tags:
                     link_tags(ptag, new_tag)
-            if child_tags.exists():
-                for ctag in child_tags:
-                    link_tags(new_tag, ctag)
+                
             
-            return HttpResponseRedirect('/library/')
+            return HttpResponseRedirect('/library/tag-link')
     else:
         form = TagForm()
 
@@ -266,7 +263,7 @@ def tag_link(request):
     for tag in tags:
         url_name = urllib.parse.quote(tag.name)
         tag_urls[tag.name] = url_name
-        print(tag_urls[tag.name])
+        #print(tag_urls[tag.name])
     return render(request, 'libapp/tag-link.html', {'tags':tags, 'urls':tag_urls})
 
 #function for unlinking the currently selected tag from the selected parent
@@ -284,4 +281,11 @@ def tag_add_child(request):
     #print("CHILD TAG SELECTED: ", child_tag)
     #print("Current tag: ", current_tag)
     link_tags(current_tag, child_tag)
+    print("Tag link successful")
+    return HttpResponseRedirect('/library/tag-link')
+
+def tag_delete(request):
+    current_tag = check_tag_id(request.POST.get('current_tag'))
+    print("TAG NAME: ", current_tag.name)
+    current_tag.delete()
     return HttpResponseRedirect('/library/tag-link')

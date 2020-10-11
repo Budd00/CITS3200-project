@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="685670c3-58b4-4245-bdce-efa7ed6f7077" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/webapp/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapp/libapp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/libapp/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapp/memapp/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/memapp/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapp/memapp/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/memapp/apps.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapp/memapp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/memapp/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapp/memapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/memapp/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapp/memapp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/memapp/views.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapp/webapp/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/webapp/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapp/webapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/webapp/urls.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JupyterTrust" id="0409e67f-fb77-4a84-a154-0c9834f7ea48" />
+  <component name="ProjectId" id="1iAqvvOPtjWLiwzh4UBaOU67Zxf" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="685670c3-58b4-4245-bdce-efa7ed6f7077" name="Default Changelist" comment="" />
+      <created>1601360982130</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1601360982130</updated>
+      <workItem from="1601360984593" duration="1240000" />
+      <workItem from="1601873438775" duration="2194000" />
+      <workItem from="1602405200834" duration="162000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="104" y="62" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1601361670298">
+      <screen x="0" y="0" width="1280" height="800" />
+    </state>
+    <state x="104" y="62" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1280.800/391.-1080.1920.1080@0.0.1280.800" timestamp="1601361670298" />
+    <state x="366" y="209" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1601361536822">
+      <screen x="0" y="0" width="1280" height="800" />
+    </state>
+    <state x="366" y="209" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1280.800/391.-1080.1920.1080@0.0.1280.800" timestamp="1601361536822" />
+    <state x="141" y="39" key="SettingsEditor" timestamp="1601873878649">
+      <screen x="0" y="0" width="1280" height="800" />
+    </state>
+    <state x="141" y="39" key="SettingsEditor/0.0.1280.800/391.-1080.1920.1080@0.0.1280.800" timestamp="1601873878649" />
+    <state x="438" y="321" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1601873736352">
+      <screen x="0" y="0" width="1280" height="800" />
+    </state>
+    <state x="438" y="321" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1280.800/391.-1080.1920.1080@0.0.1280.800" timestamp="1601873736352" />
+    <state x="305" y="124" width="670" height="676" key="search.everywhere.popup" timestamp="1601880884092">
+      <screen x="0" y="0" width="1280" height="800" />
+    </state>
+    <state x="305" y="124" width="670" height="676" key="search.everywhere.popup/0.0.1280.800/391.-1080.1920.1080@0.0.1280.800" timestamp="1601880884092" />
+    <state x="370" y="309" key="vcs.readOnlyHandler.ReadOnlyStatusDialog" timestamp="1601361742086">
+      <screen x="0" y="0" width="1280" height="800" />
+    </state>
+    <state x="370" y="309" key="vcs.readOnlyHandler.ReadOnlyStatusDialog/0.0.1280.800/391.-1080.1920.1080@0.0.1280.800" timestamp="1601361742086" />
+  </component>
+</project>

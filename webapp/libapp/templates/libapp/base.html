@@ -7,10 +7,16 @@
 </head>
 <body>
     <div class="navbar">
+    {% if user.is_authenticated %}
+        <p>Welcome, {{ user.username }}. Thanks for logging in.</p>
+    {% else %}
+        <p>Welcome, new user. Please <a href="/accounts/login">log in.</a></p>
+    {% endif %}
       <a href="/library/">Home</a><br>
       <a href="/library/asset-create/">Create asset</a><br>
       <a href="/library/tag-create/">Create tag</a><br>
-      <a href='/library/tag-link'>Link tag</a>
+      <a href='/library/tag-link'>Link tag</a><br>
+      <a href = '/accounts/logout'> Log out</a>
     </div>
     {% block content %}
     {% endblock %}

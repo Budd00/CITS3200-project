@@ -2,15 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="685670c3-58b4-4245-bdce-efa7ed6f7077" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/webapp/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/db.sqlite3" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webapp/libapp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/libapp/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webapp/memapp/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/memapp/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webapp/memapp/apps.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/memapp/apps.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webapp/memapp/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/memapp/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webapp/memapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/memapp/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webapp/memapp/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/memapp/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webapp/webapp/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/webapp/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/webapp/webapp/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/webapp/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapp/libapp/templates/libapp/base.html" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/libapp/templates/libapp/base.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/webapp/templates/registration/logged_out.html" beforeDir="false" afterPath="$PROJECT_DIR$/webapp/templates/registration/logged_out.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

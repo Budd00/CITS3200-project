@@ -8,7 +8,9 @@
     {% block content %}
     <p>Logged out!</p>
 
-    <a href="{% url 'login'%}">Click here to login again.</a>
+    <a href="{% url 'login'%}">Click here to login again.</a><br>
+    <p>Or:</p>
+    <a href="/library">go back to library home page.</a>
     {% endblock %}
 </body>
 </html>

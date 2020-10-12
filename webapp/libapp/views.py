@@ -2,6 +2,7 @@ from .forms import *
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import *
+from django.contrib.auth.decorators import login_required
 import urllib.parse
 #Tag, check_asset, check_tag, find_assets, check_tag_alternates, add_asset, add_tag, link_asset, link_tags, Asset, find_asset_tags, find_asset_tags_direct, remove_asset_edge, check_tag_id
 
@@ -95,6 +96,7 @@ def index(request):
             asset_dict[asset] = tree(tags, [])
         return render(request, "libapp/library.html", context)
 
+
 def asset_delete(request):
     asset_name = request.GET.get('asset')
     asset = check_asset(asset_name)
@@ -128,6 +130,7 @@ def tree(tags, hierarchy):
 def refresh(request):
     return HttpResponseRedirect('/library/')
 
+@login_required
 #page for asset creation
 def asset_create(request):
     if request.method == 'POST':
@@ -228,6 +231,7 @@ def tag_edit(request):
         context['form'] = form
         return render(request, 'libapp/tag-edit.html', context)
 
+@login_required
 #page for tag creation
 def tag_create(request):
     if request.method == 'POST':
@@ -259,6 +263,7 @@ def tag_create(request):
 
     return render(request, 'libapp/tag-create.html', {'form': form})
 
+@login_required
 #page for tag linking
 def tag_link(request):
     tags = Tag.objects.all()

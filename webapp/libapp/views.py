@@ -198,6 +198,7 @@ def asset_edit(request):
 def tag_edit(request):
     tag_name = request.GET.get('tag')
     tag = check_tag(tag_name)
+    tag_list = Tag.objects.all()
     context = {}
     if request.method == 'POST':
         form = TagEditForm(request.POST)
@@ -226,6 +227,7 @@ def tag_edit(request):
             context['altlen'] = 0
         context['tag'] = tag
         context['form'] = form
+        context['tag_list'] = tag_list
         return render(request, 'libapp/tag-edit.html', context)
 
 #page for tag creation
@@ -272,17 +274,26 @@ def tag_unlink(request):
     current_tag = check_tag_id(request.POST.get('current_tag'))
     remove_edge(parent_tag, current_tag)
     #print("Parent tag: ", parent_tag, "\nCurrent Tag: ", current_tag)
-    return HttpResponseRedirect('/library/tag-link')
+    return HttpResponseRedirect('/library/tag-link/tag-edit-connections/?tag=' + parent_tag.name)
 
 #function for adding a new child tag to the currently selected tag
 def tag_add_child(request):
     child_tag = check_tag_id(request.POST.get('child_tag'))
     current_tag = check_tag_id(request.POST.get('current_tag'))
-    #print("CHILD TAG SELECTED: ", child_tag)
-    #print("Current tag: ", current_tag)
+    print("CHILD TAG SELECTED: ", child_tag)
+    print("Current tag: ", current_tag)
     link_tags(current_tag, child_tag)
     print("Tag link successful")
-    return HttpResponseRedirect('/library/tag-link')
+    return HttpResponseRedirect('/library/tag-link/tag-edit-connections/?tag=' + current_tag.name)
+
+def tag_edit_connections(request):
+    tag_list = Tag.objects.all()
+    tag_name = request.GET.get('tag')
+    current_tag = check_tag(tag_name)
+    #print("CURRENT TAG: ", current_tag.name)
+    #return HttpResponseRedirect('/library/')
+    return render(request, 'libapp/tag-edit-connections.html', {'tag_list':tag_list, 'current_tag': current_tag})
+
 
 def tag_delete(request):
     current_tag = check_tag_id(request.POST.get('current_tag'))

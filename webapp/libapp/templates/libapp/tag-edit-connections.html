@@ -1,0 +1,80 @@
+{% extends 'libapp/base.html' %}
+{% load static %}
+{% load tag_link_extras %}
+{% block content %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'libapp/tag-edit-connections.css'%}">
+
+<h1> Edit Tag Connections! </h1>
+
+
+    {% for child_tag in current_tag.build_hierarchy %}
+        {% if child_tag == "indent" %}
+            <div class="child_tags">
+        {% elif child_tag == "dedent" %}
+            </div>
+        {% elif forloop.counter0 == 0 %}
+            <div class="root_tag" value='{{ child_tag.id }}'>
+                <table>
+                    <th>
+                        {{ child_tag.name }}
+                    </th>
+                    <th>
+                        <form method="POST" action="tag-add-child/">
+                            {% csrf_token %}
+                            <select name="child_tag" onchange="this.form.submit()">
+                                <option selected>--- Add child ---</option>
+                                {% for tag_inner in tag_list %}
+                                    {% if tag_inner not in current_tag.child and tag_inner not in current_tag.parent and tag_inner != current_tag %}
+                                    <option value="{{ tag_inner.id }}">{{ tag_inner.name }}</option>       
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                            <input name='current_tag' type='text' value="{{ child_tag.id }}" style="display:none">
+                        </form>
+                    </th>
+                </table>
+            <br>
+        {% else %}
+            <div class='tag' value='{{ child_tag.id }}'>
+            <table>
+            <th>
+                <span style='font-size:15px;'>&#8627;</span>
+                {{ child_tag.name }}
+            </th>
+            <th>
+                <form method="POST" action="tag-unlink/" onsubmit="find_parent(this)">
+                    {% csrf_token %}
+                    <input type="submit" value="Unlink Parent">
+                    <input name='parent_tag' type='text' style="display:none">
+                    <input name='current_tag' type='text' value='{{ child_tag.id }}' style="display:none">
+                </form>
+            </th>  
+            <th>
+                <form method="POST" action="tag-add-child/">
+                    {% csrf_token %}
+                    <select name="child_tag" onchange="this.form.submit()">
+                        <option selected>--- Add child ---</option>
+                        {% for tag_inner in tag_list %}
+                            {% if tag_inner not in current_tag.child and tag_inner not in current_tag.parent and tag_inner != current_tag %}
+                            <option value="{{ tag_inner.id }}">{{ tag_inner.name }}</option>       
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <input name='current_tag' type='text' value="{{ child_tag.id }}" style="display:none">
+                </form>
+            </th>
+            </table>
+            {% with next_element=tag.build_hierarchy|next:forloop.counter0 %}
+            {% if next_element != "indent" %}
+                </div>
+            {% endif %}
+            {% endwith %}
+            <br>
+        
+        {% endif %}
+    {% endfor %}
+
+    <button onclick="location.href='/library/tag-link'">Go Back</button>
+    <script src="{% static 'libapp/tag-edit-connections.js' %}"></script>
+{% endblock %}

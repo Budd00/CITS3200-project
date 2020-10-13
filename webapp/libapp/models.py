@@ -124,8 +124,6 @@ def link_tags(parent, child):
         #if it doesn't exist, create a new edge
         newEdge = Edge.objects.create(parent_tag = parent, child_tag = child)
         #check for any new implied links between assets and tags
-        if check_tag_cycle(child, child) == True:
-            return
         implied_assets_new(newEdge)
         return newEdge
     return None

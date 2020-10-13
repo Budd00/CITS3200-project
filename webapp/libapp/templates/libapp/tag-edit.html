@@ -13,9 +13,16 @@
     {{ form.new_alts.label }}<p></p>
     {{ form.new_alts }}<p></p>
     <br>
-  <input type="submit" value="Submit">
+   
+    <br><br>
+
 </form>
 <br>
+
+
+    
+<p></p>
+    <input type="submit" value="Submit">
 <br>
 {% if altlen > 0 %}
     <table>
@@ -40,5 +47,7 @@
         {% endfor %}
     </table>
 {% endif %}
+
+
 
 {% endblock %}

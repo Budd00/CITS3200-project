@@ -25,18 +25,15 @@
                                         <b><a href='tag-edit/?tag={{ url }}'>{{ child_tag.name }}</a></b>
                                     {% endif %}
                                 {% endfor %}
+                            </th>
                             <th>
-                                <form method="POST" action="tag-add-child/">
+                                <button onclick="location.href='tag-edit-connections/?tag={{ child_tag.name }}'">Edit Links</button>
+                            </th>
+                            <th>
+                                <form method="POST" action="tag-delete/">
                                     {% csrf_token %}
-                                    <select name="child_tag" onchange="this.form.submit()">
-                                        <option selected>--- Add child ---</option>
-                                        {% for tag_inner in tags %}
-                                            {% if tag_inner not in tag.build_hierarchy %}
-                                            <option value="{{ tag_inner.id }}">{{ tag_inner.name }}</option>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </select>
-                                    <input name='current_tag' type='text' value="{{ child_tag.id }}" style="display:none">
+                                    <input type="submit" value="Delete">
+                                    <input name='current_tag' type='text' value='{{ child_tag.id }}' style="display:none">
                                 </form>
                             </th>
                         </table>
@@ -54,26 +51,15 @@
                             </th>
                             </th>
                             <th>
-                                <form method="POST" action="tag-unlink/" onsubmit="find_parent(this)">
+                                <button onclick="location.href='tag-edit-connections/?tag={{ child_tag.name }}'">Edit Links</button>
+                            </th>
+                            <th>
+                                <form method="POST" action="tag-delete/">
                                     {% csrf_token %}
-                                    <input type="submit" value="Unlink Parent">
-                                    <input name='parent_tag' type='text' style="display:none">
+                                    <input type="submit" value="Delete">
                                     <input name='current_tag' type='text' value='{{ child_tag.id }}' style="display:none">
                                 </form>
-                            </th>  
-                            <th> 
-                                <form method="POST" action="tag-add-child/">
-                                    {% csrf_token %}
-                                    <select name="child_tag" onchange="this.form.submit()">
-                                        <option selected>--- Add child ---</option>
-                                        {% for tag in tags %}
-                                            {% if object not in tag.build_hierarchy %}
-                                            <option value="{{ tag.id }}">{{ tag.name }}</option>       
-                                            {% endif %}
-                                        {% endfor %}
-                                    </select>
-                                    <input name='current_tag' type='text' value="{{ child_tag.id }}" style="display:none">
-                                </form>
+                                
                             </th>
                         </table>
                         {% with next_element=tag.build_hierarchy|next:forloop.counter0 %}

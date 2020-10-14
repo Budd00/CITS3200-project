@@ -42,6 +42,7 @@
         <p></p>
         {% if asset_dict %}
             <table>
+                {% if user.is_authenticated %}
                 <tr>
                     <th>Asset</th>
                     <th>Tags</th>
@@ -49,9 +50,20 @@
                     <th>Private Notes</th>
                     <th>Delete</th>
                 </tr>
+                {% else %}
+                <tr>
+                    <th>Asset</th>
+                    <th>Tags</th>
+                    <th>Public Notes</th>
+                </tr>
+                {% endif %}
                 {% for asset, hierarchy in asset_dict.items %}
                 <tr>
+                    {% if user.is_authenticated %}
                     <td><a href='asset-edit/?asset={{ asset.name }}'>{{ asset.name }}</a></td>
+                    {% else %}
+                    <td>{{ asset.name }}</td>
+                    {% endif %}
                     <td>
                     {% for item in hierarchy %}
                         {% if item == "indent" %}
@@ -68,6 +80,7 @@
                     <td>
                         {{ asset.pub_notes }}
                     </td>
+                    {% if user.is_authenticated %}
                     <td>
                         {{ asset.priv_notes }}
                     </td>
@@ -78,6 +91,7 @@
                             <input name='asset' type='text' value='{{ asset.name }}' style="display:none">
                         </form>
                     </td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
             </table>

@@ -97,6 +97,7 @@ def index(request):
         return render(request, "libapp/library.html", context)
 
 
+@login_required
 def asset_delete(request):
     asset_name = request.GET.get('asset')
     asset = check_asset(asset_name)
@@ -106,6 +107,7 @@ def asset_delete(request):
     asset.delete()
     return HttpResponseRedirect('/library/')
 
+@login_required
 #remove an alternate name    
 def alt_delete(request):
     alt_name = request.GET.get('alt')
@@ -155,6 +157,7 @@ def asset_create(request):
 
     return render(request, 'libapp/asset-create.html', {'form': form})
 
+@login_required
 #page for asset editing.
 #Navigation to asset editing page occurs when user clicks on any one of the assets at the library homepage
 #The editing page for that particular asset shows up as a result
@@ -194,6 +197,7 @@ def asset_edit(request):
         context['asset_tags'] = asset_tags
         return render(request, 'libapp/asset-edit.html', context)
 
+@login_required
 #page for tag editing.
 #Navigation to tag editing page occurs when user clicks on any one of the tags in the tag linking page
 #The editing page for that particular tag shows up as a result
@@ -274,6 +278,7 @@ def tag_link(request):
         print(tag_urls[tag.name])
     return render(request, 'libapp/tag-link.html', {'tags':tags, 'urls':tag_urls})
 
+@login_required
 #function for unlinking the currently selected tag from the selected parent
 def tag_unlink(request):
     parent_tag = check_tag_id(request.POST.get('parent_tag'))
@@ -282,6 +287,7 @@ def tag_unlink(request):
     #print("Parent tag: ", parent_tag, "\nCurrent Tag: ", current_tag)
     return HttpResponseRedirect('/library/tag-link')
 
+@login_required
 #function for adding a new child tag to the currently selected tag
 def tag_add_child(request):
     child_tag = check_tag_id(request.POST.get('child_tag'))

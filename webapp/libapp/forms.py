@@ -31,14 +31,7 @@ class TagForm(forms.Form):
     name = forms.CharField(max_length=100)
     alt_names = forms.CharField(required = False, max_length=200, label = "Provide any alternate names for this tag. Seperate each name with a comma and a space.")
 
-
     parent_tags = MyModelMultipleChoiceField(
-        queryset = Tag.objects.all(),
-        widget = forms.CheckboxSelectMultiple,
-        required = False
-    )
-
-    child_tags = MyModelMultipleChoiceField(
         queryset = Tag.objects.all(),
         widget = forms.CheckboxSelectMultiple,
         required = False

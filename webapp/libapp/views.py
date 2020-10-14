@@ -3,9 +3,8 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from .models import *
 import urllib.parse
-#Tag, check_asset, check_tag, find_assets, check_tag_alternates, add_asset, add_tag, link_asset, link_tags, Asset, find_asset_tags, find_asset_tags_direct, remove_asset_edge, check_tag_id
 
-# library database page
+# view for library database page
 def index(request):
     query = request.GET.get('q')
     option = request.GET.get('option')
@@ -88,13 +87,13 @@ def index(request):
         #retrieves all assets
         asset_list = Asset.objects.all()
         hierarchy = []
-        #populates asset_dict in format {asset_1:[tag_1,tag_2],asset_2:[tag_1,tag_4],asset_3...}
         for asset in asset_list:
             tags = find_asset_tags_direct(asset)
             # if tags is not empty
             asset_dict[asset] = tree(tags, [])
         return render(request, "libapp/library.html", context)
 
+#function for deleting an asset
 def asset_delete(request):
     asset_name = request.GET.get('asset')
     asset = check_asset(asset_name)
@@ -126,10 +125,7 @@ def tree(tags, hierarchy):
     else:
         return hierarchy
 
-def refresh(request):
-    return HttpResponseRedirect('/library/')
-
-#page for asset creation
+#view for asset creation
 def asset_create(request):
     if request.method == 'POST':
         form = AssetForm(request.POST)
@@ -153,7 +149,7 @@ def asset_create(request):
 
     return render(request, 'libapp/asset-create.html', {'form': form})
 
-#page for asset editing.
+#view for asset editing.
 #Navigation to asset editing page occurs when user clicks on any one of the assets at the library homepage
 #The editing page for that particular asset shows up as a result
 def asset_edit(request):
@@ -185,14 +181,13 @@ def asset_edit(request):
             
             return HttpResponseRedirect('/library/')
     else:
-        #tags = find_asset_tags(asset)
         form = AssetForm(instance=asset)
         asset_tags = find_asset_tags_direct(asset)
         context['form'] = form
         context['asset_tags'] = asset_tags
         return render(request, 'libapp/asset-edit.html', context)
 
-#page for tag editing.
+#view for tag editing.
 #Navigation to tag editing page occurs when user clicks on any one of the tags in the tag linking page
 #The editing page for that particular tag shows up as a result
 def tag_edit(request):
@@ -230,7 +225,7 @@ def tag_edit(request):
         context['tag_list'] = tag_list
         return render(request, 'libapp/tag-edit.html', context)
 
-#page for tag creation
+#view for tag creation
 def tag_create(request):
     if request.method == 'POST':
         form = TagForm(request.POST)
@@ -255,17 +250,15 @@ def tag_create(request):
     else:
         form = TagForm()
 
-
     return render(request, 'libapp/tag-create.html', {'form': form})
 
-#page for tag linking
+#view for tag linking
 def tag_link(request):
     tags = Tag.objects.all()
     tag_urls = {}
     for tag in tags:
         url_name = urllib.parse.quote(tag.name)
         tag_urls[tag.name] = url_name
-        #print(tag_urls[tag.name])
     return render(request, 'libapp/tag-link.html', {'tags':tags, 'urls':tag_urls})
 
 #function for unlinking the currently selected tag from the selected parent
@@ -273,30 +266,24 @@ def tag_unlink(request):
     parent_tag = check_tag_id(request.POST.get('parent_tag'))
     current_tag = check_tag_id(request.POST.get('current_tag'))
     remove_edge(parent_tag, current_tag)
-    #print("Parent tag: ", parent_tag, "\nCurrent Tag: ", current_tag)
     return HttpResponseRedirect('/library/tag-link/tag-edit-connections/?tag=' + parent_tag.name)
 
 #function for adding a new child tag to the currently selected tag
 def tag_add_child(request):
     child_tag = check_tag_id(request.POST.get('child_tag'))
     current_tag = check_tag_id(request.POST.get('current_tag'))
-    print("CHILD TAG SELECTED: ", child_tag)
-    print("Current tag: ", current_tag)
     link_tags(current_tag, child_tag)
-    print("Tag link successful")
     return HttpResponseRedirect('/library/tag-link/tag-edit-connections/?tag=' + current_tag.name)
 
+#view for editing tag connections
 def tag_edit_connections(request):
     tag_list = Tag.objects.all()
     tag_name = request.GET.get('tag')
     current_tag = check_tag(tag_name)
-    #print("CURRENT TAG: ", current_tag.name)
-    #return HttpResponseRedirect('/library/')
     return render(request, 'libapp/tag-edit-connections.html', {'tag_list':tag_list, 'current_tag': current_tag})
 
-
+#function for deleting a tag
 def tag_delete(request):
     current_tag = check_tag_id(request.POST.get('current_tag'))
-    print("TAG NAME: ", current_tag.name)
     current_tag.delete()
     return HttpResponseRedirect('/library/tag-link')

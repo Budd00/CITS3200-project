@@ -23,9 +23,15 @@ class Tag(models.Model):
     def increase_pop(self):
         self.popularity += 1
 
+    #return all direct children
     def child(self):
         return find_child_tags(self)
 
+    #return all direct and implied children
+    def implied_children(self):
+        return reachable_child(self)
+
+    #return all direct parents
     def parent(self):
         return find_parent_tags(self)
 
@@ -33,14 +39,13 @@ class Tag(models.Model):
         return tree([self], [])
 
 class Asset(models.Model):
-    
     #primary key
     id = models.UUIDField(default=uuid.uuid4, primary_key = True)
     #name
     name = models.CharField(max_length = 64)
     #Any notes for the public to read. ie. description
     pub_notes = models.TextField(blank=True)
-    #Any notes not for the public to read. ie. missing peices, maintenance issues
+    #Any notes not for the public to read. ie. missing pieces, maintenance issues
     priv_notes = models.TextField(blank=True)
 
     tags = models.ManyToManyField(Tag)
@@ -331,36 +336,6 @@ def reachable_child(start, ignore=[]):
     #return the list of children found
     return checked
 
-
-#returns a list of assets linked to the given tag either directly or implicitly
-#def find_all_assets(tag):
-    #initialise the empty list of assets
-    #assets = []
-    #list to store any tags that have been checked to avoid cycles
-    #tags_checked = []
-    #the list of parent tags that have been found used as a stack
-    #tags_to_check = []
-    #add the given tag to the list of tags to check
-    #tags_to_check.append(tag)
-    #cycle over the list of tags to check until there are no more to check
-    #while len(tags_to_check) > 0:
-        #remove the newest tag from the stack
-        #checking = tags_to_check.pop(len(tags_to_check)-1)
-        #find all parent tags for the current tag
-        #parents = find_parent_tags(checking, tags_checked)
-        #add the current tag to the list of checked tags
-        #tags_checked.append(checking)
-        #add all new parents to the stack to be checked
-        #tags_to_check = tags_to_check+parents
-
-        #find all assets directly linked to the current tag
-        #these_assets = find_assets_direct(checking, assets)
-        #add found assets to the list of assets
-        #assets = assets + these_assets
-    #return the list of found assets
-
-    #return assets
-
 #returns a list of alternate names for that tag
 def find_alternate_name(tag):
     alternate_names = []
@@ -386,7 +361,6 @@ def add_alternate_name(tag, name):
 
 #finds all assets linked to a parent tag in an edge and links them to all the child tags of that edge
 def implied_assets_new(edge):
-    print("heya")
     #find the parent tag linked to the edge
     this_parent = Tag.objects.filter(id__exact = edge.parent_tag.id)[0]
     #find the child tag linked to the edge
@@ -508,4 +482,3 @@ def tree(tags, hierarchy):
         return hierarchy
     else:
         return hierarchy
-

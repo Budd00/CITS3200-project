@@ -4,9 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .models import *
 from django.contrib.auth.decorators import login_required
 import urllib.parse
-#Tag, check_asset, check_tag, find_assets, check_tag_alternates, add_asset, add_tag, link_asset, link_tags, Asset, find_asset_tags, find_asset_tags_direct, remove_asset_edge, check_tag_id
 
-# library database page
+# view for library database page
 def index(request):
     query = request.GET.get('q')
     option = request.GET.get('option')
@@ -89,7 +88,6 @@ def index(request):
         #retrieves all assets
         asset_list = Asset.objects.all()
         hierarchy = []
-        #populates asset_dict in format {asset_1:[tag_1,tag_2],asset_2:[tag_1,tag_4],asset_3...}
         for asset in asset_list:
             tags = find_asset_tags_direct(asset)
             # if tags is not empty
@@ -129,8 +127,6 @@ def tree(tags, hierarchy):
         return hierarchy
     else:
         return hierarchy
-def refresh(request):
-    return HttpResponseRedirect('/library/')
 
 @login_required
 #page for asset creation
@@ -190,7 +186,6 @@ def asset_edit(request):
             
             return HttpResponseRedirect('/library/')
     else:
-        #tags = find_asset_tags(asset)
         form = AssetForm(instance=asset)
         asset_tags = find_asset_tags_direct(asset)
         context['form'] = form
@@ -203,8 +198,8 @@ def asset_edit(request):
 #The editing page for that particular tag shows up as a result
 def tag_edit(request):
     tag_name = request.GET.get('tag')
-    print(tag_name)
     tag = check_tag(tag_name)
+    tag_list = Tag.objects.all()
     context = {}
     if request.method == 'POST':
         form = TagEditForm(request.POST)
@@ -233,6 +228,7 @@ def tag_edit(request):
             context['altlen'] = 0
         context['tag'] = tag
         context['form'] = form
+        context['tag_list'] = tag_list
         return render(request, 'libapp/tag-edit.html', context)
 
 @login_required
@@ -245,7 +241,6 @@ def tag_create(request):
             alt_names = form.cleaned_data['alt_names']
             alternate_names = alt_names.split(", ")
             parent_tags = form.cleaned_data['parent_tags']
-            child_tags = form.cleaned_data['child_tags']
             new_tag = add_tag(tag_name)
             if new_tag == None:
                 return render(request, 'libapp/fail.html', {'error':'Tag already exists'})
@@ -256,14 +251,11 @@ def tag_create(request):
             if parent_tags.exists():
                 for ptag in parent_tags:
                     link_tags(ptag, new_tag)
-            if child_tags.exists():
-                for ctag in child_tags:
-                    link_tags(new_tag, ctag)
+                
             
-            return HttpResponseRedirect('/library/')
+            return HttpResponseRedirect('/library/tag-link')
     else:
         form = TagForm()
-
 
     return render(request, 'libapp/tag-create.html', {'form': form})
 
@@ -275,7 +267,6 @@ def tag_link(request):
     for tag in tags:
         url_name = urllib.parse.quote(tag.name)
         tag_urls[tag.name] = url_name
-        print(tag_urls[tag.name])
     return render(request, 'libapp/tag-link.html', {'tags':tags, 'urls':tag_urls})
 
 @login_required
@@ -284,15 +275,25 @@ def tag_unlink(request):
     parent_tag = check_tag_id(request.POST.get('parent_tag'))
     current_tag = check_tag_id(request.POST.get('current_tag'))
     remove_edge(parent_tag, current_tag)
-    #print("Parent tag: ", parent_tag, "\nCurrent Tag: ", current_tag)
-    return HttpResponseRedirect('/library/tag-link')
+    return HttpResponseRedirect('/library/tag-link/tag-edit-connections/?tag=' + parent_tag.name)
 
 @login_required
 #function for adding a new child tag to the currently selected tag
 def tag_add_child(request):
     child_tag = check_tag_id(request.POST.get('child_tag'))
     current_tag = check_tag_id(request.POST.get('current_tag'))
-    #print("CHILD TAG SELECTED: ", child_tag)
-    #print("Current tag: ", current_tag)
     link_tags(current_tag, child_tag)
+    return HttpResponseRedirect('/library/tag-link/tag-edit-connections/?tag=' + current_tag.name)
+
+#view for editing tag connections
+def tag_edit_connections(request):
+    tag_list = Tag.objects.all()
+    tag_name = request.GET.get('tag')
+    current_tag = check_tag(tag_name)
+    return render(request, 'libapp/tag-edit-connections.html', {'tag_list':tag_list, 'current_tag': current_tag})
+
+#function for deleting a tag
+def tag_delete(request):
+    current_tag = check_tag_id(request.POST.get('current_tag'))
+    current_tag.delete()
     return HttpResponseRedirect('/library/tag-link')

@@ -12,7 +12,7 @@
     {{ form.alt_names.label }}<p></p>
     {{ form.alt_names }}<p></p>
     <br>
-    {{ form.parent_tags.label}}<br>
+    <h2>Assign Parent Tags</h2>
     {% for value, label, tag in form.parent_tags.field.choices %}
         {% if not tag.parent %} <!--If no parents -->
             {% if tag.build_hierarchy %}
@@ -23,44 +23,19 @@
                     {% elif child_tag == "dedent" %}
                         </div>
                     {% elif forloop.counter0 == 0 %}
-                        <input type="checkbox" value="{{ child_tag.id }}" name="tags">
+                    <br>
+                        <input type="checkbox" value="{{ child_tag.id }}" name="parent_tags">
                         {{ child_tag.name }}<br>
                     {% else %}
                     <span style='font-size:15px;'>&#8627;</span>
-                    <input type="checkbox" value="{{ child_tag.id }}" name="tags">
+                    <input type="checkbox" value="{{ child_tag.id }}" name="parent_tags">
                         {{ child_tag.name }}<br>
                     {% endif %}
                 {% endfor %}
             {% endif %}
-    {% endif %}
-    
-    <br>
+        {% endif %}
     {% endfor %}
-    <p></p>
-    {{ form.child_tags.label}}<br>
-    {% for value, label, tag in form.child_tags.field.choices %}
-        {% if not tag.parent %} <!--If no parents -->
-            {% if tag.build_hierarchy %}
-                {% for child_tag in tag.build_hierarchy %}
-                    {% if child_tag == "indent" %}
-                        <div class="child_tags">
-                        
-                    {% elif child_tag == "dedent" %}
-                        </div>
-                    {% elif forloop.counter0 == 0 %}
-                        <input type="checkbox" value="{{ child_tag.id }}" name="tags">
-                        {{ child_tag.name }}<br>
-                    {% else %}
-                    <span style='font-size:15px;'>&#8627;</span>
-                    <input type="checkbox" value="{{ child_tag.id }}" name="tags">
-                        {{ child_tag.name }}<br>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-    {% endif %}
-    
-    <br>
-    {% endfor %}
+
   <input type="submit" value="Submit">
 </form>
 

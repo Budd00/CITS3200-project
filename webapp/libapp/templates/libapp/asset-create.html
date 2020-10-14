@@ -12,7 +12,7 @@
   {{form.pub_notes.label }}: {{ form.pub_notes }}<p></p>
   {{form.priv_notes.label }}: {{ form.priv_notes }}<p></p>
 
-
+    <h2>Link to Tags</h2>
     {% for value, label, tag in form.tags.field.choices %}
         {% if not tag.parent %} <!--If no parents -->
             {% if tag.build_hierarchy %}
@@ -23,6 +23,7 @@
                     {% elif child_tag == "dedent" %}
                         </div>
                     {% elif forloop.counter0 == 0 %}
+                    <br>
                         <input type="checkbox" value="{{ child_tag.id }}" name="tags">
                         {{ child_tag.name }}<br>
 
@@ -35,7 +36,7 @@
             {% endif %}
         {% endif %}
         
-        <br>
+        
     {% endfor %}
     {% if form.errors %}
     {% for field in form %}

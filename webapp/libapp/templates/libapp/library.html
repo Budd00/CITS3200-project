@@ -42,7 +42,7 @@
         </div>
         <p></p>
         {% if asset_dict %}
-            <table>
+            <table id="assets">
                 {% if user.is_authenticated %}
                 <tr>
                     <th>Asset</th>
@@ -53,9 +53,9 @@
                 </tr>
                 {% else %}
                 <tr>
-                    <th>Asset</th>
-                    <th>Tags</th>
-                    <th>Public Notes</th>
+                    <th class="asset">Asset</th>
+                    <th class="tags">Tags</th>
+                    <th class="public">Notes</th>
                 </tr>
                 {% endif %}
                 {% for asset, hierarchy in asset_dict.items %}
@@ -63,7 +63,7 @@
                     {% if user.is_authenticated %}
                     <td><a href='asset-edit/?asset={{ asset.name }}'>{{ asset.name }}</a></td>
                     {% else %}
-                    <td>{{ asset.name }}</td>
+                    <td class="asset2">{{ asset.name }}</td>
                     {% endif %}
                     <td>
                     {% for item in hierarchy %}

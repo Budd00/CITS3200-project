@@ -5,6 +5,8 @@
 <link rel="stylesheet" type="text/css" href="{% static 'libapp/tag-create.css'%}">
 
 <h1> Create a tag! </h1>
+
+<input type="submit" value="Create Tag"><br><br>
 <form  method="POST" autocomplete="off">
     {% csrf_token %}
     {{form.name.label }}: {{ form.name }}<p></p>
@@ -21,7 +23,7 @@
             {% if tag.build_hierarchy %}
                 {% for child_tag in tag.build_hierarchy %}
                     {% if child_tag == "indent" %}
-                        <div class="child_tags">    
+                        <div class="child_tags">
                     {% elif child_tag == "dedent" %}
                         </div>
                     {% elif forloop.counter0 == 0 %}
@@ -40,7 +42,7 @@
         {% endif %}
     {% endfor %}
 
-  <input type="submit" value="Submit">
+
 </form>
 <script src="{% static 'libapp/tag-create.js' %}"></script>
 {% endblock %}

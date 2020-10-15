@@ -13,7 +13,7 @@ body{
   margin: -10px;
 }
 
-ul {
+.header ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
@@ -21,7 +21,7 @@ ul {
   background-color: #240B36;
 }
 
-li {
+.header li {
   float: left;
 }
 

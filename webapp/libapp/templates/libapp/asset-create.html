@@ -4,13 +4,18 @@
 
 <link rel="stylesheet" type="text/css" href="{% static 'libapp/asset-create.css'%}">
 
-<h1>Create Asset</h1>
+<h1>Create New Asset</h1>
+<p>Enter name, notes, select tags and hit create!</p><br>
+<input type="submit" value="Create Asset"><br><br>
 <form method="POST" autocomplete="off">
   {% csrf_token %}
-  
+
   {{form.name.label }}: {{ form.name }}<p></p>
   {{form.pub_notes.label }}: {{ form.pub_notes }}<p></p>
   {{form.priv_notes.label }}: {{ form.priv_notes }}<p></p>
+
+  <br><br>
+
 
     <h2>Link to Tags</h2>
     <h3>Quick Search</h3>
@@ -55,7 +60,6 @@
     {% endfor %}
 {% endif %}
 
-  <input type="submit" value="submit">
 </form>
 <script src="{% static 'libapp/asset-create.js' %}"></script>
 {% endblock %}

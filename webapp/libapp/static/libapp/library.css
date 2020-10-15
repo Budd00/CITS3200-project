@@ -34,12 +34,36 @@
     font-size: 17px;
 }
 
-table, th, td {
-    border: 1px solid black;
-    margin: auto;
+
+table, th {
+  border-collapse: collapse;
+  border: 2px solid black;
+}
+
+.tags {
+  width: 30%;
+}
+.asset{
+  width: 20%;
+}
+.asset2 {
+  text-align: center;
+  font-weight: bold;
+}
+
+#assets tr:nth-child(even){background-color: #e6e6e6;}
+
+#assets tr:hover {background-color: #f4eafb;}
+
+th {
+    padding: 15px;
+    background-color: #240B36;
+    color: white;
 }
 
 td {
+    border: 1px solid #434343;
+    margin: auto;
     padding: 10px;
 }
 

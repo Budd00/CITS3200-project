@@ -18,4 +18,5 @@ function find_parent(input_id) {
 
 $(document).ready(function() {
     $('.js-example-basic-single').select2();
+    
 });

@@ -3,6 +3,7 @@
 function find_parent(input_id) {
     //This whole string of parentNodes gives the tag id of the direct parent
     let parent_tag = input_id.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.getAttribute("value")
+    console.log(parent_tag)
     let parent_tag_input = input_id
     //For loop is used to find the input field of the parent tag
     for(let i = 0; i < parent_tag_input.children.length; i++) {
@@ -15,4 +16,6 @@ function find_parent(input_id) {
     return true;
 }
 
-
+$(document).ready(function() {
+    $('.js-example-basic-single').select2();
+});

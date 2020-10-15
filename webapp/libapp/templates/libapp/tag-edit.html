@@ -22,8 +22,10 @@
 
     
 <p></p>
+    <button onclick="location.href='/library/tag-link'">Go Back</button>
     <input type="submit" value="Submit">
 <br>
+
 {% if altlen > 0 %}
     <table>
         <tr>
@@ -38,6 +40,7 @@
             <td>
                 <form action='alt-delete/' method="GET" autocomplete="off">
                     {% csrf_token %}
+                    
                     <input type="submit" value="Delete">
                     <input name='alt' type='text' value='{{ alt_name.name }}' style="display:none">
                 </form>

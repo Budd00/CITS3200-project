@@ -274,16 +274,22 @@ def tag_link(request):
 def tag_unlink(request):
     parent_tag = check_tag_id(request.POST.get('parent_tag'))
     current_tag = check_tag_id(request.POST.get('current_tag'))
+    root_tag = check_tag_id(request.POST.get('root_tag'))
     remove_edge(parent_tag, current_tag)
-    return HttpResponseRedirect('/library/tag-link/tag-edit-connections/?tag=' + parent_tag.name)
+    return HttpResponseRedirect('/library/tag-link/tag-edit-connections/?tag=' + root_tag.name)
 
 @login_required
 #function for adding a new child tag to the currently selected tag
 def tag_add_child(request):
     child_tag = check_tag_id(request.POST.get('child_tag'))
     current_tag = check_tag_id(request.POST.get('current_tag'))
+    root_tag = check_tag_id(request.POST.get('root_tag'))
     link_tags(current_tag, child_tag)
-    return HttpResponseRedirect('/library/tag-link/tag-edit-connections/?tag=' + current_tag.name)
+    #temp fixve
+    if root_tag == None:
+        root_tag = current_tag
+    
+    return HttpResponseRedirect('/library/tag-link/tag-edit-connections/?tag=' + root_tag.name)
 
 #view for editing tag connections
 def tag_edit_connections(request):

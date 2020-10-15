@@ -1,4 +1,3 @@
-//Quick search
 function search_tag(input) {
     const keyword = input.value.toLowerCase()
     root_tag_list = document.getElementsByClassName("root_tag")

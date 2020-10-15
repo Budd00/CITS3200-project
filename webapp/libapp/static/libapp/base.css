@@ -1,0 +1,41 @@
+/* Basic Webpage CSS */
+
+body{
+  background-color: white;
+  color: black;
+  font-family: "Lucida Console";
+}
+
+.header {
+  background-color: #240B36;
+  color: White;
+  padding: 15px;
+  margin: -10px;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #240B36;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  margin: 5px;
+}
+
+/* Change the link color to #111 (black) on hover */
+li a:hover {
+  background-color: white;
+  color: #240B36;
+}

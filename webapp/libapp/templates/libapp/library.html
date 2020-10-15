@@ -13,13 +13,14 @@
             <title>Library Database</title>
         </head>
     <body>
+      <div class="content">
         <h1>Library Database</h1>
-        
+
         <div>
             Search for a game via name or tag!
           </div>
         <div class="search_bar" id="search-bar">
-   
+
             <form method="GET" autocomplete="off">
                 {% if option == "" %}
                     <input type="radio" id="asset" name="option" value="asset" checked="checked">
@@ -68,7 +69,7 @@
                     {% for item in hierarchy %}
                         {% if item == "indent" %}
                             <div class="child_tags">
-                            
+
                         {% elif item == "dedent" %}
                             </div>
                         {% else %}
@@ -98,6 +99,7 @@
         {% else %}
             {{ error_msg }}
         {% endif %}
+      </div>
     </body>
 </html>
 {% endblock %}

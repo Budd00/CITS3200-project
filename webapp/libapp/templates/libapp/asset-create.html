@@ -6,8 +6,8 @@
 
 <h1>Create New Asset</h1>
 <p>Enter name, notes, select tags and hit create!</p><br>
-<input type="submit" value="Create Asset"><br><br>
 <form method="POST" autocomplete="off">
+<input type="submit" value="Create Asset"><br><br>
   {% csrf_token %}
 
   {{form.name.label }}: {{ form.name }}<p></p>

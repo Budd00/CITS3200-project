@@ -7,11 +7,12 @@
   <br>
 <h2>Edit Existing Asset</h2>
 <hr>
-<input type="submit" class="submit" value="Edit Asset">
-<br>
-<hr><br>
+
 
 <form method="POST" autocomplete="off">
+  <input type="submit" class="submit" value="Edit Asset">
+  <br>
+  <hr><br>
     {% csrf_token %}
     {{form.name.label }}: {{ form.name }}<br><br><hr><br>
     {{form.pub_notes.label }}:<br><br>

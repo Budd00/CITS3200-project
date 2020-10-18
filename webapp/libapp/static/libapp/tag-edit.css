@@ -18,7 +18,13 @@ button{
   border: none;
   font-family: "Lucida Console";
   font-size: 16px;
+  cursor: pointer;
 }
+
+button:hover {
+  background-color: #62526e;
+}
+
 .submit{
   background-color: #240B36;
   color: white;
@@ -26,4 +32,9 @@ button{
   border: none;
   font-family: "Lucida Console";
   font-size: 16px;
+  cursor: pointer;
+}
+
+.submit:hover {
+  background-color: #62526e;
 }

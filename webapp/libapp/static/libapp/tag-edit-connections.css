@@ -19,4 +19,9 @@ button {
   border: none;
   font-family: "Lucida Console";
   font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #62526e;
 }

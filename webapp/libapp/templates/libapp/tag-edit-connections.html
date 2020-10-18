@@ -23,7 +23,7 @@
                         <form method="POST" action="tag-add-child/">
                             {% csrf_token %}
                             <select class="js-example-basic-single" name="child_tag" onchange="this.form.submit()">
-                                <option selected>--- Add child ---</option>
+                                <option selected>- Add child -</option>
                                 {% for tag_inner in tag_list %}
                                     {% if tag_inner not in current_tag.child and tag_inner not in current_tag.parent and tag_inner != current_tag %}
                                     <option value="{{ tag_inner.id }}">{{ tag_inner.name }}</option>
@@ -55,7 +55,7 @@
                 <form method="POST" action="tag-add-child/">
                     {% csrf_token %}
                     <select class="js-example-basic-single" name="child_tag" onchange="this.form.submit()">
-                        <option selected>--- Add child ---</option>
+                        <option selected>- Add child -</option>
                         {% for tag_inner in tag_list %}
                             {% if tag_inner not in child_tag.parent and tag_inner != child_tag and tag_inner != current_tag %}
                             <option value="{{ tag_inner.id }}">{{ tag_inner.name }}</option>

@@ -12,8 +12,9 @@
   <input class="button" type="submit" value="Create Asset"><br><br><hr><br>
   {% csrf_token %}
 
-  {{form.name.label }}: {{ form.name }}<br><br><hr><br>
-
+  {{form.name.label }}: {{ form.name }}<br><br>
+  <div class="error">{{ error }}</div><hr><br>
+    
 
     {{form.pub_notes.label }}:<br><br>
 
@@ -51,7 +52,7 @@
                             {{ child_tag.name }}<br>
                     {% endif %}
                 {% endfor %}
-                <br><br>
+                <p></p>
             {% endif %}
         {% endif %}
     {% endfor %}

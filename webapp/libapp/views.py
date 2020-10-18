@@ -5,7 +5,11 @@ from .models import *
 from django.contrib.auth.decorators import login_required
 import urllib.parse
 
-# view for library database page
+#redirect to library database page if URL is just '/'
+def main_index(request):
+    return HttpResponseRedirect('/library/')
+
+# view for library database page '/library'
 def index(request):
     query = request.GET.get('q')
     option = request.GET.get('option')
@@ -72,12 +76,13 @@ def index(request):
 
     #if the 'asset' radio button was selected
     elif option == 'asset':
-        asset = check_asset(query)
+        asset_list = fuzzy_check_asset(query)
         #asset found
-        if asset is not None:
+        if asset_list is not None:
             #find related tags
-            tags = find_asset_tags_direct(asset)
-            asset_dict[asset] = tree(tags, [])
+            for asset in asset_list:
+                tags = find_asset_tags_direct(asset)
+                asset_dict[asset] = tree(tags, [])
             return render(request, "libapp/library.html", context)
         #no such asset found
         else:
@@ -140,7 +145,7 @@ def asset_create(request):
             tags = form.cleaned_data['tags']
             new_asset = add_asset(asset_name, public_notes, private_notes)
             if new_asset == None:
-                return render(request, 'libapp/fail.html', {'error':'Asset already exists'})
+                return render(request, 'libapp/asset-create.html', {'form': form, 'error':'Asset name unavailable. Please enter another name.'})
             #If tags were selected
             if tags.exists():
                 for tag in tags:
@@ -164,7 +169,14 @@ def asset_edit(request):
     if request.method == 'POST':
         form = AssetForm(request.POST)
         if form.is_valid():
-            
+            #if not none, asset name is taken
+            if check_asset(form.cleaned_data['name']) != None and form.cleaned_data['name'] != asset.name:
+                form = AssetForm(instance=asset)
+                asset_tags = find_asset_tags_direct(asset)
+                context['form'] = form
+                context['asset_tags'] = asset_tags
+                context['error'] = 'Asset name unavailable. Please enter another name.'
+                return render(request, 'libapp/asset-edit.html', context)
             asset.name = form.cleaned_data['name']
             asset.pub_notes = form.cleaned_data['pub_notes']
             asset.priv_notes = form.cleaned_data['priv_notes']

@@ -34,16 +34,16 @@
                     {% else %}
                         <span style='font-size:15px;'>&#8627;</span>
                         <input type="checkbox" class="{{ child_tag.id }}" value="{{ child_tag.id }}" name="parent_tags" onchange="find_same_tags(this)">
-                            {{ child_tag.name }}
+                            {{ child_tag.name }}<br>
                     {% endif %}
                 {% endfor %}
-                <br><br>
+                <p></p>
             {% endif %}
         {% endif %}
     {% endfor %}
 
-
 </form>
+
 <script src="{% static 'libapp/tag-create.js' %}"></script>
 {% endblock %}
 </div>

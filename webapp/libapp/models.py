@@ -180,6 +180,13 @@ def check_asset(asset_name):
     else:
         return None
 
+def fuzzy_check_asset(asset_name):
+    asset_query = Asset.objects.filter(name__icontains=asset_name)
+    if asset_query.exists():
+        return asset_query
+    else:
+        return None
+
 #returns a list of assets with direct links to this tag, ignoring any assets in the found list
 def find_assets_direct(tag, found=[]):
     #empty list to store found assets

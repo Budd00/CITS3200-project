@@ -14,7 +14,9 @@
   <br>
   <hr><br>
     {% csrf_token %}
-    {{form.name.label }}: {{ form.name }}<br><br><hr><br>
+    {{form.name.label }}: {{ form.name }}<br><br>
+    <div class="error">{{ error }}</div>
+    <hr><br>
     {{form.pub_notes.label }}:<br><br>
      {{ form.pub_notes }}<br><br><hr><br>
     {{form.priv_notes.label }}:<br><br>

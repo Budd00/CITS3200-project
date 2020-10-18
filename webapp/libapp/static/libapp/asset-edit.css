@@ -14,4 +14,13 @@
   border: none;
   font-family: "Lucida Console";
   font-size: 16px;
+  cursor: pointer;
+}
+
+.submit:hover {
+  background-color: #62526e;
+}
+
+.error {
+  color: red;
 }

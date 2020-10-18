@@ -3,21 +3,21 @@
 {% block content %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'libapp/tag-create.css'%}">
+<div class="content">
+  <br>
+<h2> Create a tag! </h2><hr><br>
 
-<h1> Create a tag! </h1>
 
-<input type="submit" value="Create Tag"><br><br>
 <form  method="POST" autocomplete="off">
+  <input class="button" type="submit" value="Create Tag"><br><br><hr><br>
     {% csrf_token %}
-    {{form.name.label }}: {{ form.name }}<p></p>
-    <br>
-    {{ form.alt_names.label }}<p></p>
-    {{ form.alt_names }}<p></p>
-    <br>
-    <h2>Assign Parent Tags</h2>
-    <h3>Quick Search</h3>
+    {{form.name.label }}: {{ form.name }}<br><br><hr><br>
+    {{ form.alt_names.label }}
+    {{ form.alt_names }}<br><br><hr>
+    <h3>Assign Parent Tags</h3>
+    <h4>Quick Search</h4>
     <input name="q" type="text" placeholder="Search.." id="input" onkeyup="search_tag(this)">
-    <p></p>
+    <hr>
     {% for value, label, tag in form.parent_tags.field.choices %}
         {% if not tag.parent %} <!--If no parents -->
             {% if tag.build_hierarchy %}
@@ -34,10 +34,10 @@
                     {% else %}
                         <span style='font-size:15px;'>&#8627;</span>
                         <input type="checkbox" class="{{ child_tag.id }}" value="{{ child_tag.id }}" name="parent_tags" onchange="find_same_tags(this)">
-                            {{ child_tag.name }}<br>
+                            {{ child_tag.name }}
                     {% endif %}
                 {% endfor %}
-                <p></p>
+                <br><br>
             {% endif %}
         {% endif %}
     {% endfor %}
@@ -46,3 +46,4 @@
 </form>
 <script src="{% static 'libapp/tag-create.js' %}"></script>
 {% endblock %}
+</div>

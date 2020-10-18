@@ -4,7 +4,7 @@
 {% block content %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'libapp/tag-edit-connections.css'%}">
-
+<div class="content">
 <h1> Edit Tag Connections! </h1>
 
 
@@ -12,7 +12,7 @@
         {% if child_tag == "indent" %}
             <div class="child_tags">
         {% elif child_tag == "dedent" %}
-            </div></div>
+            </div>
         {% elif forloop.counter0 == 0 %}
             <div class="root_tag" value='{{ child_tag.id }}'>
                 <table>
@@ -26,7 +26,7 @@
                                 <option selected>--- Add child ---</option>
                                 {% for tag_inner in tag_list %}
                                     {% if tag_inner not in current_tag.child and tag_inner not in current_tag.parent and tag_inner != current_tag %}
-                                    <option value="{{ tag_inner.id }}">{{ tag_inner.name }}</option>       
+                                    <option value="{{ tag_inner.id }}">{{ tag_inner.name }}</option>
                                     {% endif %}
                                 {% endfor %}
                             </select>
@@ -50,7 +50,7 @@
                     <input name='current_tag' type='text' value='{{ child_tag.id }}' style="display:none">
                     <input name='root_tag' type='text' value="{{ current_tag.id }}" style="display:none">
                 </form>
-            </th>  
+            </th>
             <th>
                 <form method="POST" action="tag-add-child/">
                     {% csrf_token %}
@@ -58,7 +58,7 @@
                         <option selected>--- Add child ---</option>
                         {% for tag_inner in tag_list %}
                             {% if tag_inner not in child_tag.parent and tag_inner != child_tag and tag_inner != current_tag %}
-                            <option value="{{ tag_inner.id }}">{{ tag_inner.name }}</option>       
+                            <option value="{{ tag_inner.id }}">{{ tag_inner.name }}</option>
                             {% endif %}
                         {% endfor %}
                     </select>
@@ -73,10 +73,11 @@
             {% endif %}
             {% endwith %}
             <br>
-        
+
         {% endif %}
     {% endfor %}
 
     <button onclick="location.href='/library/tag-link'">Go Back</button>
+    </div>
     <script src="{% static 'libapp/tag-edit-connections.js' %}"></script>
 {% endblock %}

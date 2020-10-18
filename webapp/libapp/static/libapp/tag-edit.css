@@ -6,3 +6,24 @@ table, th, td {
 td {
     padding: 10px;
 }
+.content{
+  margin-left: 35px;
+  margin-right: 35px;
+}
+
+button{
+  background-color: #240B36;
+  color: white;
+  padding: 15px;
+  border: none;
+  font-family: "Lucida Console";
+  font-size: 16px;
+}
+.submit{
+  background-color: #240B36;
+  color: white;
+  padding: 15px;
+  border: none;
+  font-family: "Lucida Console";
+  font-size: 16px;
+}

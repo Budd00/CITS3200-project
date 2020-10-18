@@ -4,23 +4,34 @@
 
 <link rel="stylesheet" type="text/css" href="{% static 'libapp/asset-create.css'%}">
 
-<h1>Create New Asset</h1>
-<p>Enter name, notes, select tags and hit create!</p><br>
+<div class="content">
+  <br>
+
 <form method="POST" autocomplete="off">
-<input type="submit" value="Create Asset"><br><br>
+  <h2>Create New Asset</h2> <hr><br>
+  <input class="button" type="submit" value="Create Asset"><br><br><hr><br>
   {% csrf_token %}
 
-  {{form.name.label }}: {{ form.name }}<p></p>
-  {{form.pub_notes.label }}: {{ form.pub_notes }}<p></p>
-  {{form.priv_notes.label }}: {{ form.priv_notes }}<p></p>
+  {{form.name.label }}: {{ form.name }}<br><br><hr><br>
 
-  <br><br>
+
+    {{form.pub_notes.label }}:<br><br>
+
+
+  {{ form.pub_notes }}<br><br><hr><br>
+
+      {{form.priv_notes.label }}:<br><br>
+
+  {{ form.priv_notes }}
+
+
+  <br><br><hr>
 
 
     <h2>Link to Tags</h2>
     <h3>Quick Search</h3>
     <input name="q" type="text" placeholder="Search.." id="input" onkeyup="search_tag(this)">
-    <p></p>
+    <br><hr><br>
     {% for value, label, tag in form.tags.field.choices %}
         {% if not tag.parent %} <!--If no parents -->
             {% if tag.build_hierarchy %}
@@ -40,7 +51,7 @@
                             {{ child_tag.name }}<br>
                     {% endif %}
                 {% endfor %}
-                <p></p>
+                <br><br>
             {% endif %}
         {% endif %}
     {% endfor %}
@@ -63,3 +74,5 @@
 </form>
 <script src="{% static 'libapp/asset-create.js' %}"></script>
 {% endblock %}
+
+</div>

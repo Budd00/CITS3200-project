@@ -2,13 +2,23 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>login</title>
+    <title>Login</title>
 </head>
 <body>
-    {% block content %}
-    {% if form.errors %}
-    <p>Your username and password didn't match. Please try again.</p>
-    {% endif %}
+  <style>
+  .header {  background-color: #240B36;
+    color: White;
+    padding: 15px;
+    margin: -10px;}
+
+    body {font-family: "Lucida Console";}
+
+    .login{margin-left: 25px;}
+
+    .error{color:red;}
+  </style>
+
+
 
     {% if next %}
         {% if user.is_authenticated %}
@@ -18,7 +28,21 @@
         <p>Please login to see this page.</p>
         {% endif %}
     {% endif %}
+    <div class="header">
+
     <h2>Unigames Staff Login</h2>
+
+    </div>
+    <br><br>
+    <div class="error">
+    {% block content %}
+    {% if form.errors %}
+    <p>Your username and password didn't match. Please try again.</p>
+    {% endif %}
+  </div>
+    <br><br>
+
+    <div class="login">
 
     <form method="post" action="{% url 'login' %}">
     {% csrf_token %}
@@ -34,14 +58,17 @@
     </div>
     <br>
     <div>
-      <input type="submit" value="login" />
+      <input type="submit" value="Login" />
       <input type="hidden" name="next" value="{{ next }}" />
     </div>
     </form>
 
     {# Assumes you setup the password_reset view in your URLconf #}
-    <p><a href="{% url 'password_reset' %}">Lost password?</a></p>
+    <p><a href="{% url 'password_reset' %}">Lost password?</a>      <a href="/library/">Library Home</a>
+
+    </p>
 
     {% endblock %}
+  </div>
 </body>
 </html>

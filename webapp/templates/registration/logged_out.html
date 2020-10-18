@@ -5,12 +5,31 @@
     <title>logout</title>
 </head>
 <body>
+  <style>
+  .header {  background-color: #240B36;
+    color: White;
+    padding: 15px;
+    margin: -10px;}
+    body {font-family: "Lucida Console";}
+
+    .logout{margin-left: 25px;}
+
+  </style>
+
+  <div class="header">
+
+  <h2>Unigames Library</h2>
+
+  </div>
+  <br><br>
+  <div class="logout">
     {% block content %}
     <p>Logged out!</p>
 
-    <a href="{% url 'login'%}">Login again</a><br>
-    <p>Or:</p>
-    <a href="/library">Library Home</a>
+    <a href="{% url 'login'%}">Login</a>           <a href="/library">Library Home</a>
+    <br>
+
     {% endblock %}
+  </div>
 </body>
 </html>

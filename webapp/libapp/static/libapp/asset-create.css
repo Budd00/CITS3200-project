@@ -1,3 +1,17 @@
 .child_tags {
     padding-left:1em;
 }
+
+.content{
+  margin-right: 35px;
+    margin-left: 35px;
+}
+
+.button{
+  background-color: #240B36;
+  color: white;
+  padding: 15px;
+  border: none;
+  font-family: "Lucida Console";
+  font-size: 16px;
+}

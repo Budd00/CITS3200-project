@@ -2,19 +2,27 @@
 {% load static %}
 {% block content %}
 
-<link rel="stylesheet" type="text/css" href="{% static 'libapp/library.css'%}">
+<link rel="stylesheet" type="text/css" href="{% static 'libapp/asset-edit.css'%}">
+<div class="content">
+  <br>
+<h2>Edit Existing Asset</h2>
+<hr>
+<input type="submit" class="submit" value="Edit Asset">
+<br>
+<hr><br>
 
-<h1>Edit Asset</h1>
 <form method="POST" autocomplete="off">
     {% csrf_token %}
-    {{form.name.label }}: {{ form.name }}<p></p>
-    {{form.pub_notes.label }}: {{ form.pub_notes }}<p></p>
-    {{form.priv_notes.label }}: {{ form.priv_notes }}<p></p>
+    {{form.name.label }}: {{ form.name }}<br><br><hr><br>
+    {{form.pub_notes.label }}:<br><br>
+     {{ form.pub_notes }}<br><br><hr><br>
+    {{form.priv_notes.label }}:<br><br>
+     {{ form.priv_notes }}<br><br><hr><br>
 
     <h2>Add or remove tags</h2>
     <h3>Quick Search</h3>
+    <hr><br>
     <input name="q" type="text" placeholder="Search.." id="input" onkeyup="search_tag(this)">
-    <p></p>
     {% for value, label, tag in form.tags.field.choices %}
             {% if not tag.parent %} <!--If no parents -->
                 {% if tag.build_hierarchy %}
@@ -25,7 +33,7 @@
                             </div>
                         {% elif forloop.counter0 == 0 %}
                         <div class="root_tag" value='{{ child_tag.id }}'>
-                        
+
                             {% if child_tag in asset_tags %}
                                 <input type="checkbox" value="{{ child_tag.id }}" name="tags" checked="checked">
                                 {{ child_tag.name }}
@@ -46,10 +54,10 @@
                     <p></p>
                 {% endif %}
             {% endif %}
-            
-            
+
+
         {% endfor %}
-    <input type="submit" value="submit">
 </form>
+</div>
 <script src="{% static 'libapp/asset-edit.js' %}"></script>
 {% endblock %}

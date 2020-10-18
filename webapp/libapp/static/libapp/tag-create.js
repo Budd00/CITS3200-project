@@ -4,10 +4,11 @@ function search_tag(input) {
 
     for(let i = 0; i < root_tag_list.length; i++) {
         if( root_tag_list[i].innerText.toLowerCase().includes(keyword)) {
-            root_tag_list[i].style.display = 'block'
+            root_tag_list[i].style.display = 'block';
         }
         else {
-            root_tag_list[i].style.display = 'none'
+            root_tag_list[i].style.display = 'none';
+
         }
     }
 }

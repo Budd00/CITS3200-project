@@ -4,15 +4,15 @@
 {% block content %}
 
 <link rel="stylesheet" type="text/css" href="{% static 'libapp/tag-link.css'%}">
-
+<div class="content">
 <h1> Link a tag! </h1>
 
 <h3>Quick Search</h3>
 <input name="q" type="text" placeholder="Search.." id="input" onkeyup="search_tag(this)">
-
-    <p></p>
+</div>
+    <p></p><hr>
     {% for tag in tags %}
-        {% if not tag.parent %} <!--If no parents -->   
+        {% if not tag.parent %} <!--If no parents -->
             {% if tag.build_hierarchy %}
                 {% for child_tag in tag.build_hierarchy %}
                     {% if child_tag == "indent" %}
@@ -47,7 +47,7 @@
                             <th>
                                 <span style='font-size:15px;'>&#8627;</span>
                                 {% for name, url in urls.items %}
-                                    {% if name == child_tag.name %}
+                                     {% if name == child_tag.name %}
                                         <b><a href='tag-edit/?tag={{ url }}'>{{ child_tag.name }}</a></b>
                                     {% endif %}
                                 {% endfor %}
@@ -62,7 +62,7 @@
                                     <input type="submit" value="Delete">
                                     <input name='current_tag' type='text' value='{{ child_tag.id }}' style="display:none">
                                 </form>
-                                
+
                             </th>
                         </table>
                         {% with next_element=tag.build_hierarchy|next:forloop.counter0 %}
@@ -71,14 +71,15 @@
                         {% endif %}
                         {% endwith %}
                         <p></p>
-                    
+
                     {% endif %}
                 {% endfor %}
-                </div>
+                </div><hr>
             {% endif %}
         {% endif %}
 
     {% endfor %}
 
     <script src="{% static 'libapp/tag-link.js' %}"></script>
+
 {% endblock %}

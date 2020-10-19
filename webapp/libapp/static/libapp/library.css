@@ -51,6 +51,8 @@ table, th {
   font-weight: bold;
 }
 
+table {width: 100%;}
+
 #assets tr:nth-child(even){background-color: #e6e6e6;}
 
 #assets tr:hover {background-color: #f4eafb;}

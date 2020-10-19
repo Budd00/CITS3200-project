@@ -142,7 +142,6 @@ def link_asset(asset, tag, implied):
     #check each edge to see if the given tag is already linked
     for edge in existingEdges:
         if edge.tag_id.id == thisTag.id:
-            print(edge.asset_id)
             exists = True
     if not exists:
         newEdge = AssetEdge.objects.create(asset_id = thisAsset, tag_id = thisTag, implied=implied)
@@ -163,6 +162,7 @@ def check_tag(tag_name):
     else:
         return None
 
+# checks if the given tag id exists
 def check_tag_id(tag_id):
     tag_query = Tag.objects.filter(id__exact=tag_id)
     #returns the tag if exists
@@ -180,6 +180,7 @@ def check_asset(asset_name):
     else:
         return None
 
+#fuzzy check if given asset exists
 def fuzzy_check_asset(asset_name):
     asset_query = Asset.objects.filter(name__icontains=asset_name)
     if asset_query.exists():
@@ -377,10 +378,7 @@ def implied_assets_new(edge):
     #find all tags that are children of the child tag
     children = reachable_child(this_child)
     #create a link between each asset and each tag found if non already exists
-    print(this_parent.name)
-    print(this_child.name)
     for asset in assets:
-        print(asset.name)
         #add a link to the initial child tag
         link_asset(asset, this_child, 1)
         for tag in children:
@@ -395,7 +393,6 @@ def implied_assets_from_direct(edge):
     this_child =  Tag.objects.filter(id__exact = edge.tag_id.id)[0]
     #find all tags that are children of the child tag
     children = reachable_child(this_child)
-    print(this_asset.name, this_child.name, children)
     #create a link between the asset and each tag found if none already exists
     for tag in children:
         link_asset(this_asset, tag, 1)
